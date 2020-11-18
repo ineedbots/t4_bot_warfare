@@ -1,0 +1,19 @@
+# Ignore everything in repository root 
+/*
+
+# Files to not ignore
+!/.gitignore
+
+!/z_client.bat
+!/z_dev.bat
+!/z_devserver.bat
+!/z_server.bat
+!/z_serverdev.bat
+
+!/main/
+!/main_shared/
+/main/*
+!/main/server.cfg
+
+*.log
+missingasset.csv
