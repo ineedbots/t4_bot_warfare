@@ -1,1 +1,1 @@
-start "" "%~dp0CoDWaWmp_LanFixed.exe" -dedicated +set dedicated "2" +set sv_maxclients "64" +set sv_punkbuster "0" +set net_port "28960" +set fs_game "" +exec server.cfg +map_rotate
+start "" "%~dp0CoDWaWmp_LanFixed.exe" +set dedicated "2" +set sv_maxclients "64" +set sv_punkbuster "0" +set net_port "28960" +set fs_game "" +exec server.cfg +map_rotate
