@@ -1690,3 +1690,149 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 	
 	return( number );
 }
+
+onUsePlantObjectFix( player )
+{
+	// planted the bomb
+	if ( !self maps\mp\gametypes\_gameobjects::isFriendlyTeam( player.pers["team"] ) )
+	{
+		level thread bombPlantedFix( self, player );
+		player logString( "bomb planted: " + self.label );
+
+		lpselfnum = player getEntityNumber();
+		lpGuid = player getGuid();
+		logPrint("BP;" + lpGuid + ";" + lpselfnum + ";" + player.name + "\n");
+		
+		// disable all bomb zones except this one
+		for ( index = 0; index < level.bombZones.size; index++ )
+		{
+			if ( level.bombZones[index] == self )
+				continue;
+				
+			level.bombZones[index] maps\mp\gametypes\_gameobjects::disableObject();
+		}
+		thread playSoundOnPlayers( "mx_SD_planted"+"_"+level.teamPrefix[player.pers["team"]] );
+		player playSound( "mp_bomb_plant" );
+		player notify ( "bomb_planted" );
+		if ( !level.hardcoreMode )
+			iPrintLn( &"MP_EXPLOSIVES_PLANTED_BY", player );
+		maps\mp\gametypes\_globallogic::leaderDialog( "bomb_planted" );
+
+		maps\mp\gametypes\_globallogic::givePlayerScore( "plant", player );
+		player thread [[level.onXPEvent]]( "plant" );
+	}
+}
+
+bombPlantedFix( destroyedObj, player )
+{
+	maps\mp\gametypes\_globallogic::pauseTimer();
+	level.bombPlanted = true;
+	
+	destroyedObj.visuals[0] thread maps\mp\gametypes\_globallogic::playTickingSound();
+	level.tickingObject = destroyedObj.visuals[0];
+
+	level.timeLimitOverride = true;
+	setGameEndTime( int( gettime() + (level.bombTimer * 1000) ) );
+	setDvar( "ui_bomb_timer", 1 );
+	
+	if ( !level.multiBomb )
+	{
+		level.sdBomb maps\mp\gametypes\_gameobjects::allowCarry( "none" );
+		level.sdBomb maps\mp\gametypes\_gameobjects::setVisibleTeam( "none" );
+		level.sdBomb maps\mp\gametypes\_gameobjects::setDropped();
+		level.sdBombModel = level.sdBomb.visuals[0];
+	}
+	else
+	{
+		
+		for ( index = 0; index < level.players.size; index++ )
+		{
+			if ( isDefined( level.players[index].carryIcon ) )
+				level.players[index].carryIcon destroyElem();
+		}
+
+		trace = bulletTrace( player.origin + (0,0,20), player.origin - (0,0,2000), false, player );
+		
+		tempAngle = randomfloat( 360 );
+		forward = (cos( tempAngle ), sin( tempAngle ), 0);
+		forward = vectornormalize( forward - vector_scale( trace["normal"], vectordot( forward, trace["normal"] ) ) );
+		dropAngles = vectortoangles( forward );
+		
+		level.sdBombModel = spawn( "script_model", trace["position"] );
+		level.sdBombModel.angles = dropAngles;
+		level.sdBombModel setModel( "weapon_explosives" );
+	}
+	destroyedObj maps\mp\gametypes\_gameobjects::allowUse( "none" );
+	destroyedObj maps\mp\gametypes\_gameobjects::setVisibleTeam( "none" );
+	/*
+	destroyedObj maps\mp\gametypes\_gameobjects::set2DIcon( "friendly", undefined );
+	destroyedObj maps\mp\gametypes\_gameobjects::set2DIcon( "enemy", undefined );
+	destroyedObj maps\mp\gametypes\_gameobjects::set3DIcon( "friendly", undefined );
+	destroyedObj maps\mp\gametypes\_gameobjects::set3DIcon( "enemy", undefined );
+	*/
+	label = destroyedObj maps\mp\gametypes\_gameobjects::getLabel();
+	
+	// create a new object to defuse with.
+	trigger = destroyedObj.bombDefuseTrig;
+	trigger.origin = level.sdBombModel.origin;
+	visuals = [];
+	defuseObject = maps\mp\gametypes\_gameobjects::createUseObject( game["defenders"], trigger, visuals, (0,0,32) );
+	defuseObject maps\mp\gametypes\_gameobjects::allowUse( "friendly" );
+	defuseObject maps\mp\gametypes\_gameobjects::setUseTime( level.defuseTime );
+	defuseObject maps\mp\gametypes\_gameobjects::setUseText( &"MP_DEFUSING_EXPLOSIVE" );
+	defuseObject maps\mp\gametypes\_gameobjects::setUseHintText( &"PLATFORM_HOLD_TO_DEFUSE_EXPLOSIVES" );
+	defuseObject maps\mp\gametypes\_gameobjects::setVisibleTeam( "any" );
+	defuseObject maps\mp\gametypes\_gameobjects::set2DIcon( "friendly", "compass_waypoint_defuse" + label );
+	defuseObject maps\mp\gametypes\_gameobjects::set2DIcon( "enemy", "compass_waypoint_defend" + label );
+	defuseObject maps\mp\gametypes\_gameobjects::set3DIcon( "friendly", "waypoint_defuse" + label );
+	defuseObject maps\mp\gametypes\_gameobjects::set3DIcon( "enemy", "waypoint_defend" + label );
+	defuseObject.label = label;
+	defuseObject.onBeginUse = maps\mp\gametypes\sd::onBeginUse;
+	defuseObject.onEndUse = maps\mp\gametypes\sd::onEndUse;
+	defuseObject.onUse = maps\mp\gametypes\sd::onUseDefuseObject;
+	defuseObject.useWeapon = "briefcase_bomb_defuse_mp";
+	
+	level.defuseObject = defuseObject;
+	
+	player.isBombCarrier = false;
+	
+	maps\mp\gametypes\sd::BombTimerWait();
+	setDvar( "ui_bomb_timer", 0 );
+	
+	destroyedObj.visuals[0] maps\mp\gametypes\_globallogic::stopTickingSound();
+	
+	if ( level.gameEnded || level.bombDefused )
+		return;
+	
+	level.bombExploded = true;
+	
+	explosionOrigin = level.sdBombModel.origin+(0,0,12);
+	level.sdBombModel hide();
+	
+	if ( isdefined( player ) )
+		destroyedObj.visuals[0] radiusDamage( explosionOrigin, 512, 200, 20, player, "MOD_EXPLOSIVE", "briefcase_bomb_mp" );
+	else
+		destroyedObj.visuals[0] radiusDamage( explosionOrigin, 512, 200, 20, undefined, "MOD_EXPLOSIVE", "briefcase_bomb_mp" );
+	
+	if ( isdefined(player) )
+		player setStatLBByName( "search_and_destroy", 1, "Targets Destroyed" );
+		
+	rot = randomfloat(360);
+	explosionEffect = spawnFx( level._effect["bombexplosion"], explosionOrigin + (0,0,50), (0,0,1), (cos(rot),sin(rot),0) );
+	triggerFx( explosionEffect );
+	
+	thread maps\mp\gametypes\sd::playSoundinSpace( "exp_suitcase_bomb_main", explosionOrigin );
+	
+	if ( isDefined( destroyedObj.exploderIndex ) )
+		exploder( destroyedObj.exploderIndex );
+	
+	for ( index = 0; index < level.bombZones.size; index++ )
+		level.bombZones[index] maps\mp\gametypes\_gameobjects::disableObject();
+	defuseObject maps\mp\gametypes\_gameobjects::disableObject();
+	
+	setGameEndTime( 0 );
+	
+	wait 3;
+	
+	maps\mp\gametypes\sd::sd_endGame( game["attackers"], game["strings"]["target_destroyed"] );
+}

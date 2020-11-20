@@ -192,8 +192,8 @@ fixGamemodes()
 	{
 		if(isDefined(level.bombZones) && level.gametype == "sd")
 		{
-			//for(i = 0; i < level.bombZones.size; i++)
-			//	level.bombZones[i].onUse = ::onUsePlantObjectFix;
+			for(i = 0; i < level.bombZones.size; i++)
+				level.bombZones[i].onUse = ::onUsePlantObjectFix;
 			break;
 		}
 		
