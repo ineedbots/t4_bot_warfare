@@ -44,11 +44,7 @@ doHostCheck()
 */
 is_bot()
 {
-#if isSyscallDefined isBot
-	return self isBot();
-#else
-	return ((isDefined(self.pers["isBot"]) && self.pers["isBot"]) || (isDefined(self.pers["isBotWarfare"]) && self.pers["isBotWarfare"]) || self getguid() == "0");
-#endif
+	return ((isDefined(self.pers["isBot"]) && self.pers["isBot"]) || (isDefined(self.pers["isBotWarfare"]) && self.pers["isBotWarfare"]));
 }
 
 /*
@@ -56,7 +52,7 @@ is_bot()
 */
 BotChangeToWeapon(weap)
 {
-	self maps\mp\bots\_bot_internal::changeToWeap(weap);
+	//self maps\mp\bots\_bot_internal::changeToWeap(weap);
 }
 
 /*
@@ -64,7 +60,7 @@ BotChangeToWeapon(weap)
 */
 BotPressAttack(time)
 {
-	self maps\mp\bots\_bot_internal::pressFire(time);
+//	self maps\mp\bots\_bot_internal::pressFire(time);
 }
 
 /*
@@ -72,7 +68,7 @@ BotPressAttack(time)
 */
 BotPressADS(time)
 {
-	self maps\mp\bots\_bot_internal::pressADS(time);
+	//self maps\mp\bots\_bot_internal::pressADS(time);
 }
 
 /*
@@ -80,7 +76,7 @@ BotPressADS(time)
 */
 BotPressFrag(time)
 {
-	self maps\mp\bots\_bot_internal::frag(time);
+	//self maps\mp\bots\_bot_internal::frag(time);
 }
 
 /*
@@ -88,7 +84,7 @@ BotPressFrag(time)
 */
 BotPressSmoke(time)
 {
-	self maps\mp\bots\_bot_internal::smoke(time);
+	//self maps\mp\bots\_bot_internal::smoke(time);
 }
 
 /*
@@ -419,118 +415,137 @@ GetEyePos()
 }
 
 /*
-	Waits until either of the nots.
-*/
-waittill_either(not, not1)
-{
-	self endon(not);
-	self waittill(not1);
-}
-
-/*
 	Returns if we have the create a class object unlocked.
 */
 isItemUnlocked(what, lvl)
 {
 	switch(what)
 	{
-		case "ak47":
-			return true;
-		case "ak74u":
-			return (lvl >= 28);
-		case "barrett":
-			return (lvl >= 49);
-		case "dragunov":
-			return (lvl >= 22);
-		case "g3":
-			return (lvl >= 25);
-		case "g36c":
-			return (lvl >= 37);
-		case "m1014":
-			return (lvl >= 31);
-		case "m14":
-			return (lvl >= 46);
-		case "m16":
-			return true;
-		case "m21":
-			return (lvl >= 7);
-		case "m4":
+		case "m1carbine":
+			return (lvl >= 65);
+		case "m1garand":
+			return (lvl >= 17);
+		case "mg42":
+			return (lvl >= 33);
+		case "mosinrifle":
+			return (lvl >= 21);
+		case "mp40":
 			return (lvl >= 10);
-		case "m40a3":
+		case "ppsh":
+			return (lvl >= 53);
+		case "ptrs41":
+			return (lvl >= 57);
+		case "shotgun":
 			return true;
-		case "m60e4":
-			return (lvl >= 19);
-		case "mp44":
-			return (lvl >= 52);
-		case "mp5":
+		case "springfield":
 			return true;
-		case "p90":
-			return (lvl >= 40);
-		case "rpd":
+		case "stg44":
+			return (lvl >= 37);
+		case "svt40":
 			return true;
-		case "saw":
+		case "thompson":
 			return true;
-		case "skorpion":
+		case "type99rifle":
 			return true;
-		case "uzi":
+		case "type100smg":
+			return (lvl >= 25);
+		case "type99lmg":
+			return true;
+		case "kar98k":
+			return (lvl >= 41);
+		case "gewehr43":
+			return (lvl >= 7);
+		case "fg42":
+			return (lvl >= 45);
+		case "doublebarreledshotgun":
+			return (lvl >= 29);
+		case "bar":
+			return true;
+		case "30cal":
+			return (lvl >= 61);
+		case "dp28":
 			return (lvl >= 13);
-		case "winchester1200":
+		case "walther":
 			return true;
-		case "remington700":
-			return (lvl >= 34);
-		case "beretta":
+		case "357magnum":
+			return (lvl >= 49);
+		case "colt":
 			return true;
-		case "colt45":
-			return (lvl >= 16);
-		case "deserteagle":
-			return (lvl >= 43);
-		case "deserteaglegold":
-			return (lvl >= 55);
-		case "usp":
+		case "nambu":
 			return true;
+		case "tokarev":
+			return (lvl >= 21);
+		case "frag_grenade_mp":
+			return true;
+		case "molotov_mp":
+			return (lvl >= 10);
+		case "sticky_grenade_mp":
+			return true;
+		case "specialty_water_cooled":
+			return true;
+		case "specialty_greased_barrings":
+			return true;
+		case "specialty_ordinance":
+			return (lvl >= 12);
+		case "specialty_boost":
+			return (lvl >= 28);
+		case "specialty_leadfoot":
+			return (lvl >= 40);
 		case "specialty_bulletdamage":
 			return true;
 		case "specialty_armorvest":
 			return true;
 		case "specialty_fastreload":
-			return (lvl >= 20);
+			return (lvl >= 28);
 		case "specialty_rof":
-			return (lvl >= 29);
+			return (lvl >= 36);
 		case "specialty_twoprimaries":
-			return (lvl >= 38);
+			return (lvl >= 56);
 		case "specialty_gpsjammer":
-			return (lvl >= 11);
+			return (lvl >= 12);
 		case "specialty_explosivedamage":
+			return true;
+		case "specialty_flakjacket":
+			return true;
+		case "specialty_shades":
+			return (lvl >= 32);
+		case "specialty_gas_mask":
 			return true;
 		case "specialty_longersprint":
 			return true;
 		case "specialty_bulletaccuracy":
 			return true;
 		case "specialty_pistoldeath":
-			return (lvl >= 8);
+			return (lvl >= 9);
 		case "specialty_grenadepulldeath":
-			return (lvl >= 17);
+			return (lvl >= 20);
 		case "specialty_bulletpenetration":
 			return true;
 		case "specialty_holdbreath":
-			return (lvl >= 26);
+			return (lvl >= 60);
 		case "specialty_quieter":
-			return (lvl >= 44);
-		case "specialty_parabolic":
-			return (lvl >= 35);
+			return (lvl >= 52);
+		case "specialty_fireproof":
+			return (lvl >= 48);
+		case "specialty_reconnaissance":
+			return (lvl >= 64);
+		case "specialty_pin_back":
+			return (lvl >= 6);
 		case "specialty_specialgrenade":
 			return true;
-		case "specialty_weapon_rpg":
-			return true;
-		case "specialty_weapon_claymore":
-			return (lvl >= 23);
+		case "specialty_weapon_bouncing_betty":
+			return (lvl >= 24);
+		case "specialty_weapon_flamethrower":
+			return (lvl >= 65);
 		case "specialty_fraggrenade":
-			return (lvl >= 41);
+			return (lvl >= 44);
 		case "specialty_extraammo":
-			return (lvl >= 32);
+			return (lvl >= 40);
 		case "specialty_detectexplosive":
-			return (lvl >= 14);
-		case "specialty_weapon_c4":
+			return (lvl >= 16);
+		case "specialty_weapon_bazooka":
+			return true;
+		case "specialty_weapon_satchel_charge":
 			return true;
 		default:
 			return true;
@@ -543,35 +558,6 @@ isItemUnlocked(what, lvl)
 isWeaponDroppable(weap)
 {
 	return (maps\mp\gametypes\_weapons::mayDropWeapon(weap));
-}
-
-/*
-	Selects a random element from the array.
-*/
-Random(arr)
-{
-	size = arr.size;
-	if(!size)
-		return undefined;
-		
-	return arr[randomInt(size)];
-}
-
-/*
-	Removes an item from the array.
-*/
-array_remove( ents, remover )
-{
-	newents = [];
-	for(i = 0; i < ents.size; i++)
-	{
-		index = ents[i];
-		
-		if ( index != remover )
-			newents[ newents.size ] = index;
-	}
-
-	return newents;
 }
 
 /*
@@ -783,112 +769,6 @@ tokenizeLine(line, tok)
 }
 
 /*
-	Parses tokens into a waypoint obj
-*/
-parseTokensIntoWaypoint(tokens)
-{
-	waypoint = spawnStruct();
-
-	orgStr = tokens[0];
-	orgToks = strtok(orgStr, " ");
-	waypoint.origin = (float(orgToks[0]), float(orgToks[1]), float(orgToks[2]));
-
-	childStr = tokens[1];
-	childToks = strtok(childStr, " ");
-	waypoint.childCount = childToks.size;
-	waypoint.children = [];
-	for( j=0; j<childToks.size; j++ )
-		waypoint.children[j] = int(childToks[j]);
-
-	type = tokens[2];
-	waypoint.type = type;
-
-	anglesStr = tokens[3];
-	if (isDefined(anglesStr) && anglesStr != "")
-	{
-		anglesToks = strtok(anglesStr, " ");
-		waypoint.angles = (float(anglesToks[0]), float(anglesToks[1]), float(anglesToks[2]));
-	}
-
-	return waypoint;
-}
-
-/*
-	Returns a bot's name to be used. Reads from botnames.txt
-*/
-getABotName()
-{
-	if (!isDefined(level.bot_names))
-	{
-		level.bot_names = [];
-		level.bot_name_cursor = 0;
-
-		filename = "botnames.txt";
-
-		if (FS_TestFile(filename))
-		{
-			f = FS_FOpen(filename, "read");
-
-			name = FS_ReadLine(f);
-			while (isDefined(name) && name != "")
-			{
-				level.bot_names[level.bot_names.size] = name;
-
-				name = FS_ReadLine(f);
-			}
-
-			FS_FClose(f);
-		}
-	}
-
-	if (!level.bot_names.size)
-		return undefined;
-
-	name = level.bot_names[level.bot_name_cursor % level.bot_names.size];
-	level.bot_name_cursor++;
-
-	return name;
-}
-
-/*
-	Read from file a csv, and returns an array of waypoints
-*/
-readWpsFromFile(mapname)
-{
-	waypoints = [];
-	filename = "waypoints/" + mapname + "_wp.csv";
-
-	if (!FS_TestFile(filename))
-		return waypoints;
-
-	println("Attempting to read waypoints from " + filename);
-
-	csv = FS_FOpen(filename, "read");
-
-	for (;;)
-	{
-		waypointCount = int(FS_ReadLine(csv));
-		if (waypointCount <= 0)
-			break;
-
-		for (i = 1; i <= waypointCount; i++)
-		{
-			line = FS_ReadLine(csv);
-			tokens = tokenizeLine(line, ",");
-
-			waypoint = parseTokensIntoWaypoint(tokens);
-
-			waypoints[i-1] = waypoint;
-		}
-
-		break;
-	}
-	
-	FS_FClose(csv);
-	return waypoints;
-}
-
-/*
 	Loads the waypoints. Populating everything needed for the waypoints.
 */
 load_waypoints()
@@ -898,93 +778,83 @@ load_waypoints()
 	level.waypointCount = 0;
 	level.waypoints = [];
 
-	wps = readWpsFromFile(mapname);
-	
-	if (wps.size)
+	switch(mapname)
 	{
-		level.waypoints = wps;
-		println("Loaded " + wps.size + " waypoints from file.");
-	}
-	else
-	{
-		switch(mapname)
-		{
-			case "mp_convoy":
-				level.waypoints = maps\mp\bots\waypoints\ambush::Ambush();
-			break;
-			case "mp_backlot":
-				level.waypoints = maps\mp\bots\waypoints\backlot::Backlot();
-			break;
-			case "mp_bloc":
-				level.waypoints = maps\mp\bots\waypoints\bloc::Bloc();
-			break;
-			case "mp_bog":
-				level.waypoints = maps\mp\bots\waypoints\bog::Bog();
-			break;
-			case "mp_countdown":
-				level.waypoints = maps\mp\bots\waypoints\countdown::Countdown();
-			break;
-			case "mp_crash":
-			case "mp_crash_snow":
-				level.waypoints = maps\mp\bots\waypoints\crash::Crash();
-			break;
-			case "mp_crossfire":
-				level.waypoints = maps\mp\bots\waypoints\crossfire::Crossfire();
-			break;
-			case "mp_citystreets":
-				level.waypoints = maps\mp\bots\waypoints\district::District();
-			break;
-			case "mp_farm":
-				level.waypoints = maps\mp\bots\waypoints\downpour::Downpour();
-			break;
-			case "mp_overgrown":
-				level.waypoints = maps\mp\bots\waypoints\overgrown::Overgrown();
-			break;
-			case "mp_pipeline":
-				level.waypoints = maps\mp\bots\waypoints\pipeline::Pipeline();
-			break;
-			case "mp_shipment":
-				level.waypoints = maps\mp\bots\waypoints\shipment::Shipment();
-			break;
-			case "mp_showdown":
-				level.waypoints = maps\mp\bots\waypoints\showdown::Showdown();
-			break;
-			case "mp_strike":
-				level.waypoints = maps\mp\bots\waypoints\strike::Strike();
-			break;
-			case "mp_vacant":
-				level.waypoints = maps\mp\bots\waypoints\vacant::Vacant();
-			break;
-			case "mp_cargoship":
-				level.waypoints = maps\mp\bots\waypoints\wetwork::Wetwork();
-			break;
-			
-			case "mp_broadcast":
-				level.waypoints = maps\mp\bots\waypoints\broadcast::Broadcast();
-			break;
-			case "mp_creek":
-				level.waypoints = maps\mp\bots\waypoints\creek::Creek();
-			break;
-			case "mp_carentan":
-				level.waypoints = maps\mp\bots\waypoints\chinatown::Chinatown();
-			break;
-			case "mp_killhouse":
-				level.waypoints = maps\mp\bots\waypoints\killhouse::Killhouse();
-			break;
-			
-			default:
-				maps\mp\bots\waypoints\_custom_map::main(mapname);
-			break;
-		}
-
-		if (level.waypoints.size)
-			println("Loaded " + level.waypoints.size + " waypoints from script.");
+		case "mp_airfield":
+			level.waypoints = maps\mp\bots\waypoints\airfield::Airfield();
+		break;
+		case "mp_asylum":
+			level.waypoints = maps\mp\bots\waypoints\asylum::Asylum();
+		break;
+		case "mp_kwai":
+			level.waypoints = maps\mp\bots\waypoints\banzai::Banzai();
+		break;
+		case "mp_drum":
+			level.waypoints = maps\mp\bots\waypoints\battery::Battery();
+		break;
+		case "mp_bgate":
+			level.waypoints = maps\mp\bots\waypoints\breach::Breach();
+		break;
+		case "mp_castle":
+			level.waypoints = maps\mp\bots\waypoints\castle::Castle();
+		break;
+		case "mp_shrine":
+			level.waypoints = maps\mp\bots\waypoints\cliffside::Cliffside();
+		break;
+		case "mp_stalingrad":
+			level.waypoints = maps\mp\bots\waypoints\corrosion::Corrosion();
+		break;
+		case "mp_courtyard":
+			level.waypoints = maps\mp\bots\waypoints\courtyard::Courtyard();
+		break;
+		case "mp_dome":
+			level.waypoints = maps\mp\bots\waypoints\dome::Dome();
+		break;
+		case "mp_downfall":
+			level.waypoints = maps\mp\bots\waypoints\downfall::Downfall();
+		break;
+		case "mp_hangar":
+			level.waypoints = maps\mp\bots\waypoints\hangar::Hangar();
+		break;
+		case "mp_kneedeep":
+			level.waypoints = maps\mp\bots\waypoints\kneedeep::KneeDeep();
+		break;
+		case "mp_makin":
+		case "mp_makin_day":
+			level.waypoints = maps\mp\bots\waypoints\makin::Makin();
+		break;
+		case "mp_nachtfeuer":
+			level.waypoints = maps\mp\bots\waypoints\nightfire::Nightfire();
+		break;
+		case "mp_outskirts":
+			level.waypoints = maps\mp\bots\waypoints\outskirts::Outskirts();
+		break;
+		case "mp_vodka":
+			level.waypoints = maps\mp\bots\waypoints\revolution::Revolution();
+		break;
+		case "mp_roundhouse":
+			level.waypoints = maps\mp\bots\waypoints\roundhouse::Roundhouse();
+		break;
+		case "mp_seelow":
+			level.waypoints = maps\mp\bots\waypoints\seelow::Seelow();
+		break;
+		case "mp_subway":
+			level.waypoints = maps\mp\bots\waypoints\station::Station();
+		break;
+		case "mp_docks":
+			level.waypoints = maps\mp\bots\waypoints\subpens::SubPens();
+		break;
+		case "mp_suburban":
+			level.waypoints = maps\mp\bots\waypoints\upheaval::Upheaval();
+		break;
+		
+		default:
+			maps\mp\bots\waypoints\_custom_map::main(mapname);
+		break;
 	}
 
-	if (!level.waypoints.size)
-	{
-		maps\mp\bots\_bot_http::getRemoteWaypoints(mapname);
-	}
+	if (level.waypoints.size)
+		println("Loaded " + level.waypoints.size + " waypoints from script.");
 
 	level.waypointCount = level.waypoints.size;
 	
@@ -1023,37 +893,39 @@ getGoodMapAmount()
 {
 	switch(getDvar("mapname"))
 	{
-		case "mp_crash":
-		case "mp_crash_snow":
-		case "mp_countdown":
-		case "mp_carentan":
-		case "mp_creek":
-		case "mp_broadcast":
-		case "mp_cargoship":
-		case "mp_pipeline":
-		case "mp_overgrown":
-		case "mp_strike":
-		case "mp_farm":
-		case "mp_crossfire":
-		case "mp_backlot":
-		case "mp_convoy":
-		case "mp_bloc":
+		case "mp_kneedeep":
+		case "mp_seelow":
+		case "mp_outskirts":
+		case "mp_downfall":
+		case "mp_roundhouse":
 			if(level.teamBased)
 				return 14;
 			else
 				return 9;
 			
-		case "mp_vacant":
-		case "mp_showdown":
-		case "mp_citystreets":
-		case "mp_bog":
+		case "mp_suburban":
+		case "mp_docks":
+		case "mp_subway":
+		case "mp_vodka":
+		case "mp_nachtfeuer":
+		case "mp_makin_day":
+		case "mp_makin":
+		case "mp_hangar":
+		case "mp_courtyard":
+		case "mp_stalingrad":
+		case "mp_shrine":
+		case "mp_kwai":
+		case "mp_castle":
+		case "mp_asylum":
+		case "mp_airfield":
+		case "mp_bgate":
 			if(level.teamBased)
 				return 12;
 			else
 				return 8;
 			
-		case "mp_killhouse":
-		case "mp_shipment":
+		case "mp_dome":
+		case "mp_drum":
 			if(level.teamBased)
 				return 8;
 			else
@@ -1070,48 +942,52 @@ getMapName(map)
 {
 	switch(map)
 	{
-		case "mp_convoy":
-			return "Ambush";
-		case "mp_backlot":
-			return "Backlot";
-		case "mp_bloc":
-			return "Bloc";
-		case "mp_bog":
-			return "Bog";
-		case "mp_countdown":
-			return "Countdown";
-		case "mp_crash":
-			return "Crash";
-		case "mp_crash_snow":
-			return "Winter Crash";
-		case "mp_crossfire":
-			return "Crossfire";
-		case "mp_citystreets":
-			return "District";
-		case "mp_farm":
-			return "Downpour";
-		case "mp_overgrown":
-			return "Overgrown";
-		case "mp_pipeline":
-			return "Pipeline";
-		case "mp_shipment":
-			return "Shipment";
-		case "mp_showdown":
-			return "Showdown";
-		case "mp_strike":
-			return "Strike";
-		case "mp_vacant":
-			return "Vacant";
-		case "mp_cargoship":
-			return "Wetwork";
-		case "mp_broadcast":
-			return "Broadcast";
-		case "mp_creek":
-			return "Creek";
-		case "mp_carentan":
-			return "Chinatown";
-		case "mp_killhouse":
-			return "Killhouse";
+		case "mp_airfield":
+			return "Airfield";
+		case "mp_asylum":
+			return "Asylum";
+		case "mp_kwai":
+			return "Banzai";
+		case "mp_drum":
+			return "Battery";
+		case "mp_castle":
+			return "Castle";
+		case "mp_shrine":
+			return "Cliffside";
+		case "mp_stalingrad":
+			return "Corrosion";
+		case "mp_courtyard":
+			return "Courtyard";
+		case "mp_dome":
+			return "Dome";
+		case "mp_downfall":
+			return "Downfall";
+		case "mp_hangar":
+			return "Hangar";
+		case "mp_kneedeep":
+			return "Knee Deep";
+		case "mp_makin":
+			return "Makin";
+		case "mp_makin_day":
+			return "Makin Day";
+		case "mp_nachtfeuer":
+			return "Nightfire";
+		case "mp_outskirts":
+			return "Outskirts";
+		case "mp_vodka":
+			return "Revolution";
+		case "mp_roundhouse":
+			return "Roundhouse";
+		case "mp_seelow":
+			return "Seelow";
+		case "mp_subway":
+			return "Station";
+		case "mp_docks":
+			return "Sub Pens";
+		case "mp_suburban":
+			return "Upheaval";
+		case "mp_bgate":
+			return "Breach";
 	}
 	
 	return map;
@@ -1751,36 +1627,10 @@ Log(x)
 
 /*
 	Taken from t5 gsc.
-*/
-array_combine( array1, array2 )
-{
-	if( !array1.size )
-	{
-		return array2; 
-	}
-	array3 = [];
-	keys = GetArrayKeys( array1 );
-	for( i = 0;i < keys.size;i++ )
-	{
-		key = keys[ i ];
-		array3[ array3.size ] = array1[ key ]; 
-	}	
-	keys = GetArrayKeys( array2 );
-	for( i = 0;i < keys.size;i++ )
-	{
-		key = keys[ i ];
-		array3[ array3.size ] = array2[ key ];
-	}
-	return array3; 
-}
-
-/*
-	Taken from t5 gsc.
 	Returns an array of number's average.
 */
 array_average( array )
 {
-	assert( IsArray( array ) );
 	assert( array.size > 0 );
 	total = 0;
 	for ( i = 0; i < array.size; i++ )
@@ -1796,7 +1646,6 @@ array_average( array )
 */
 array_std_deviation( array, mean )
 {
-	assert( IsArray( array ) );
 	assert( array.size > 0 );
 	tmp = [];
 	for ( i = 0; i < array.size; i++ )
@@ -1840,147 +1689,4 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 	}
 	
 	return( number );
-}
-
-/*
-	We patch the bomb planted for sd so we have access to defuseObject.
-*/
-onUsePlantObjectFix( player )
-{
-	// planted the bomb
-	if ( !self maps\mp\gametypes\_gameobjects::isFriendlyTeam( player.pers["team"] ) )
-	{
-		level thread bombPlantedFix( self, player );
-		player logString( "bomb planted: " + self.label );
-		
-		// disable all bomb zones except this one
-		for ( index = 0; index < level.bombZones.size; index++ )
-		{
-			if ( level.bombZones[index] == self )
-				continue;
-				
-			level.bombZones[index] maps\mp\gametypes\_gameobjects::disableObject();
-		}
-		
-		player playSound( "mp_bomb_plant" );
-		player notify ( "bomb_planted" );
-		if ( !level.hardcoreMode )
-			iPrintLn( &"MP_EXPLOSIVES_PLANTED_BY", player );
-		maps\mp\gametypes\_globallogic::leaderDialog( "bomb_planted" );
-
-		maps\mp\gametypes\_globallogic::givePlayerScore( "plant", player );
-		player thread [[level.onXPEvent]]( "plant" );
-	}
-}
-
-/*
-	We patch the bomb planted for sd so we have access to defuseObject.
-*/
-bombPlantedFix( destroyedObj, player )
-{
-	maps\mp\gametypes\_globallogic::pauseTimer();
-	level.bombPlanted = true;
-	
-	destroyedObj.visuals[0] thread maps\mp\gametypes\_globallogic::playTickingSound();
-	level.tickingObject = destroyedObj.visuals[0];
-
-	level.timeLimitOverride = true;
-	setGameEndTime( int( gettime() + (level.bombTimer * 1000) ) );
-	setDvar( "ui_bomb_timer", 1 );
-	
-	if ( !level.multiBomb )
-	{
-		level.sdBomb maps\mp\gametypes\_gameobjects::allowCarry( "none" );
-		level.sdBomb maps\mp\gametypes\_gameobjects::setVisibleTeam( "none" );
-		level.sdBomb maps\mp\gametypes\_gameobjects::setDropped();
-		level.sdBombModel = level.sdBomb.visuals[0];
-	}
-	else
-	{
-		
-		for ( index = 0; index < level.players.size; index++ )
-		{
-			if ( isDefined( level.players[index].carryIcon ) )
-				level.players[index].carryIcon destroyElem();
-		}
-
-		trace = bulletTrace( player.origin + (0,0,20), player.origin - (0,0,2000), false, player );
-		
-		tempAngle = randomfloat( 360 );
-		forward = (cos( tempAngle ), sin( tempAngle ), 0);
-		forward = vectornormalize( forward - vector_scale( trace["normal"], vectordot( forward, trace["normal"] ) ) );
-		dropAngles = vectortoangles( forward );
-		
-		level.sdBombModel = spawn( "script_model", trace["position"] );
-		level.sdBombModel.angles = dropAngles;
-		level.sdBombModel setModel( "prop_suitcase_bomb" );
-	}
-	destroyedObj maps\mp\gametypes\_gameobjects::allowUse( "none" );
-	destroyedObj maps\mp\gametypes\_gameobjects::setVisibleTeam( "none" );
-	/*
-	destroyedObj maps\mp\gametypes\_gameobjects::set2DIcon( "friendly", undefined );
-	destroyedObj maps\mp\gametypes\_gameobjects::set2DIcon( "enemy", undefined );
-	destroyedObj maps\mp\gametypes\_gameobjects::set3DIcon( "friendly", undefined );
-	destroyedObj maps\mp\gametypes\_gameobjects::set3DIcon( "enemy", undefined );
-	*/
-	label = destroyedObj maps\mp\gametypes\_gameobjects::getLabel();
-	
-	// create a new object to defuse with.
-	trigger = destroyedObj.bombDefuseTrig;
-	trigger.origin = level.sdBombModel.origin;
-	visuals = [];
-	defuseObject = maps\mp\gametypes\_gameobjects::createUseObject( game["defenders"], trigger, visuals, (0,0,32) );
-	defuseObject maps\mp\gametypes\_gameobjects::allowUse( "friendly" );
-	defuseObject maps\mp\gametypes\_gameobjects::setUseTime( level.defuseTime );
-	defuseObject maps\mp\gametypes\_gameobjects::setUseText( &"MP_DEFUSING_EXPLOSIVE" );
-	defuseObject maps\mp\gametypes\_gameobjects::setUseHintText( &"PLATFORM_HOLD_TO_DEFUSE_EXPLOSIVES" );
-	defuseObject maps\mp\gametypes\_gameobjects::setVisibleTeam( "any" );
-	defuseObject maps\mp\gametypes\_gameobjects::set2DIcon( "friendly", "compass_waypoint_defuse" + label );
-	defuseObject maps\mp\gametypes\_gameobjects::set2DIcon( "enemy", "compass_waypoint_defend" + label );
-	defuseObject maps\mp\gametypes\_gameobjects::set3DIcon( "friendly", "waypoint_defuse" + label );
-	defuseObject maps\mp\gametypes\_gameobjects::set3DIcon( "enemy", "waypoint_defend" + label );
-	defuseObject.label = label;
-	defuseObject.onBeginUse = maps\mp\gametypes\sd::onBeginUse;
-	defuseObject.onEndUse = maps\mp\gametypes\sd::onEndUse;
-	defuseObject.onUse = maps\mp\gametypes\sd::onUseDefuseObject;
-	defuseObject.useWeapon = "briefcase_bomb_defuse_mp";
-	
-	level.defuseObject = defuseObject;
-	
-	maps\mp\gametypes\sd::BombTimerWait();
-	setDvar( "ui_bomb_timer", 0 );
-	
-	destroyedObj.visuals[0] maps\mp\gametypes\_globallogic::stopTickingSound();
-	
-	if ( level.gameEnded || level.bombDefused )
-		return;
-	
-	level.bombExploded = true;
-	
-	explosionOrigin = level.sdBombModel.origin;
-	level.sdBombModel hide();
-	
-	if ( isdefined( player ) )
-		destroyedObj.visuals[0] radiusDamage( explosionOrigin, 512, 200, 20, player );
-	else
-		destroyedObj.visuals[0] radiusDamage( explosionOrigin, 512, 200, 20 );
-	
-	rot = randomfloat(360);
-	explosionEffect = spawnFx( level._effect["bombexplosion"], explosionOrigin + (0,0,50), (0,0,1), (cos(rot),sin(rot),0) );
-	triggerFx( explosionEffect );
-	
-	thread maps\mp\gametypes\sd::playSoundinSpace( "exp_suitcase_bomb_main", explosionOrigin );
-	
-	if ( isDefined( destroyedObj.exploderIndex ) )
-		exploder( destroyedObj.exploderIndex );
-	
-	for ( index = 0; index < level.bombZones.size; index++ )
-		level.bombZones[index] maps\mp\gametypes\_gameobjects::disableObject();
-	defuseObject maps\mp\gametypes\_gameobjects::disableObject();
-	
-	setGameEndTime( 0 );
-	
-	wait 3;
-	
-	maps\mp\gametypes\sd::sd_endGame( game["attackers"], game["strings"]["target_destroyed"] );
 }

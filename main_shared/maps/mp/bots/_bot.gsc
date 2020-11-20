@@ -19,8 +19,6 @@ init()
 	thread load_waypoints();
 	cac_init_patch();
 	thread hook_callbacks();
-	
-	setDvar("sv_botsPressAttackBtn", true);
 
 	if(getDvar("bots_main_GUIDs") == "")
 		setDvar("bots_main_GUIDs", "");//guids of players who will be given host powers, comma seperated
@@ -86,30 +84,17 @@ init()
 	level.bots_listenDist *= level.bots_listenDist;
 	
 	level.smokeRadius = 255;
+
+	level.bots = [];
 	
 	level.bots_fullautoguns = [];
-	level.bots_fullautoguns["rpd"] = true;
-	level.bots_fullautoguns["m60e4"] = true;
-	level.bots_fullautoguns["saw"] = true;
-	level.bots_fullautoguns["ak74u"] = true;
-	level.bots_fullautoguns["mp5"] = true;
-	level.bots_fullautoguns["p90"] = true;
-	level.bots_fullautoguns["skorpion"] = true;
-	level.bots_fullautoguns["uzi"] = true;
-	level.bots_fullautoguns["g36c"] = true;
-	level.bots_fullautoguns["m4"] = true;
-	level.bots_fullautoguns["ak47"] = true;
-	level.bots_fullautoguns["mp44"] = true;
 	
 	level thread fixGamemodes();
 	level thread onUAVAlliesUpdate();
 	level thread onUAVAxisUpdate();
-	level thread chopperWatch();
 	
 	level thread onPlayerConnect();
 	level thread handleBots();
-
-	level thread maps\mp\bots\_bot_http::doVersionCheck();
 }
 
 /*
@@ -134,8 +119,8 @@ onPlayerDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 {
 	if(self is_bot())
 	{
-		self maps\mp\bots\_bot_internal::onDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
-		self maps\mp\bots\_bot_script::onDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
+		//self maps\mp\bots\_bot_internal::onDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
+		//self maps\mp\bots\_bot_script::onDamage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
 	}
 	
 	self [[level.prevCallbackPlayerDamage]](eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset);
@@ -148,8 +133,8 @@ onPlayerKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHi
 {
 	if(self is_bot())
 	{
-		self maps\mp\bots\_bot_internal::onKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
-		self maps\mp\bots\_bot_script::onKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
+		//self maps\mp\bots\_bot_internal::onKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
+		//self maps\mp\bots\_bot_script::onKilled(eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
 	}
 	
 	self [[level.prevCallbackPlayerKilled]](eInflictor, eAttacker, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, timeOffset, deathAnimDuration);
@@ -207,8 +192,8 @@ fixGamemodes()
 	{
 		if(isDefined(level.bombZones) && level.gametype == "sd")
 		{
-			for(i = 0; i < level.bombZones.size; i++)
-				level.bombZones[i].onUse = ::onUsePlantObjectFix;
+			//for(i = 0; i < level.bombZones.size; i++)
+			//	level.bombZones[i].onUse = ::onUsePlantObjectFix;
 			break;
 		}
 		
@@ -258,6 +243,16 @@ fixPerksAndScriptKick()
 }
 
 /*
+	When a bot disconnects.
+*/
+onDisconnect()
+{
+	self waittill("disconnect");
+	
+	level.bots = array_remove(level.bots, self);
+}
+
+/*
 	Called when a player connects.
 */
 connected()
@@ -284,10 +279,24 @@ connected()
 	
 	self thread fixPerksAndScriptKick();
 	
-	self thread maps\mp\bots\_bot_internal::connected();
-	self thread maps\mp\bots\_bot_script::connected();
+	//self thread maps\mp\bots\_bot_internal::connected();
+	//self thread maps\mp\bots\_bot_script::connected();
+
+	level.bots[level.bots.size] = self;
+	self thread onDisconnect();
 
 	level notify("bot_connected", self);
+}
+
+/*
+	When a bot gets added into the game.
+*/
+added()
+{
+	self endon("disconnect");
+	
+	//self thread maps\mp\bots\_bot_internal::added();
+	//self thread maps\mp\bots\_bot_script::added();
 }
 
 /*
@@ -295,14 +304,7 @@ connected()
 */
 add_bot()
 {
-	name = getABotName();
-	
-	bot = undefined;
-
-	if (isDefined(name) && name.size >= 3)
-		bot = addtestclient(name);
-	else
-		bot = addtestclient();
+	bot = addtestclient();
 
 	if (isdefined(bot))
 	{
@@ -472,7 +474,12 @@ teamBots()
 						if(player.pers["team"] == toTeam)
 							continue;
 							
-						player notify("menuresponse", game["menu_team"], toTeam);
+						if (toTeam == "allies")
+							player thread [[level.allies]]();
+						else if (toTeam == "axis")
+							player thread [[level.axis]]();
+						else
+							player thread [[level.spectator]]();
 						break;
 					}
 				}
@@ -495,7 +502,7 @@ teamBots()
 				{
 					if(axis > teamAmount)
 					{
-						player notify("menuresponse", game["menu_team"], "allies");
+						player thread [[level.allies]]();
 						break;
 					}
 				}
@@ -503,12 +510,12 @@ teamBots()
 				{
 					if(axis < teamAmount)
 					{
-						player notify("menuresponse", game["menu_team"], "axis");
+						player thread [[level.axis]]();
 						break;
 					}
 					else if(player.pers["team"] != "allies")
 					{
-						player notify("menuresponse", game["menu_team"], "allies");
+						player thread [[level.allies]]();
 						break;
 					}
 				}
@@ -614,20 +621,11 @@ addBots()
 			setDvar("bots_manage_add", 1);
 		else if(amount > fillAmount && getDvarInt("bots_manage_fill_kick"))
 		{
-			RemoveTestClient(); //cod4x
+			tempBot = random(getBotArray());
+			if (isDefined(tempBot))
+				kick( tempBot getEntityNumber(), "EXE_PLAYERKICKED" );
 		}
 	}
-}
-
-/*
-	When a bot gets added into the game.
-*/
-added()
-{
-	self endon("disconnect");
-	
-	self thread maps\mp\bots\_bot_internal::added();
-	self thread maps\mp\bots\_bot_script::added();
 }
 
 /*
@@ -640,7 +638,7 @@ onGrenadeFire()
 	{
 		self waittill ( "grenade_fire", grenade, weaponName );
 		grenade.name = weaponName;
-		if(weaponName == "smoke_grenade_mp")
+		if(weaponName == "m8_white_smoke_mp")
 			grenade thread AddToSmokeList();
 	}
 }
@@ -675,46 +673,6 @@ thinkSmoke()
 	wait 11.5;
 	
 	level.bots_smokeList ListRemove(self);
-}
-
-/*
-	Watches for chopper. This is used to fix bots from targeting leaving or crashing helis because script is iw3 old and buggy.
-*/
-chopperWatch()
-{
-	for(;;)
-	{
-		while(!isDefined(level.chopper))
-			wait 0.05;
-
-		chopper = level.chopper;
-
-		if (!isEntity(chopper))
-		{
-			chopper = level.chopper["allies"];
-			if (!isDefined(chopper))
-				chopper = level.chopper["axis"];
-		}
-
-		level.bot_chopper = true;
-		chopper watchChopper();
-		level.bot_chopper = false;
-		
-		while(isDefined(level.chopper))
-			wait 0.05;
-	}
-}
-
-/*
-	Waits until the chopper is deleted, leaving or crashing.
-*/
-watchChopper()
-{
-	self endon("death");
-	self endon("leaving");
-	self endon("crashing");
-	
-	level waittill("helicopter gone");
 }
 
 /*
