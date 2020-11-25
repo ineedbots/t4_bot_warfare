@@ -339,6 +339,22 @@ isArtShocked()
 }
 
 /*
+	If the player is carrying a bomb
+*/
+isBombCarrier()
+{
+	return (isDefined(self.isBombCarrier) && self.isBombCarrier);
+}
+
+/*
+	If the site is in use
+*/
+isInUse()
+{
+	return (isDefined(self.inUse) && self.inUse);
+}
+
+/*
 	Returns a valid grenade launcher weapon
 */
 getValidTube()
@@ -412,6 +428,53 @@ GetEyeHeight()
 GetEyePos()
 {
 	return self getTagOrigin("tag_eye");
+}
+
+/*
+	Taken from iw4 script
+*/
+waittill_any_timeout( timeOut, string1, string2, string3, string4, string5 )
+{
+	if ( ( !isdefined( string1 ) || string1 != "death" ) &&
+	( !isdefined( string2 ) || string2 != "death" ) &&
+	( !isdefined( string3 ) || string3 != "death" ) &&
+	( !isdefined( string4 ) || string4 != "death" ) &&
+	( !isdefined( string5 ) || string5 != "death" ) )
+		self endon( "death" );
+
+	ent = spawnstruct();
+
+	if ( isdefined( string1 ) )
+		self thread waittill_string( string1, ent );
+
+	if ( isdefined( string2 ) )
+		self thread waittill_string( string2, ent );
+
+	if ( isdefined( string3 ) )
+		self thread waittill_string( string3, ent );
+
+	if ( isdefined( string4 ) )
+		self thread waittill_string( string4, ent );
+
+	if ( isdefined( string5 ) )
+		self thread waittill_string( string5, ent );
+
+	ent thread _timeout( timeOut );
+
+	ent waittill( "returned", msg );
+	ent notify( "die" );
+	return msg;
+}
+
+/*
+	Used for waittill_any_timeout
+*/
+_timeout( delay )
+{
+	self endon( "die" );
+
+	wait( delay );
+	self notify( "returned", "timeout" );
 }
 
 /*
@@ -1544,7 +1607,7 @@ AStarSearch(start, goal, team, greedy_path)
 
 			// have certain types of nodes more expensive
 			if (childtype == "climb" || childtype == "prone")
-				penalty++;
+				penalty += 4;
 			
 			//calc the total path we have took
 			newg = bestNode.g + DistanceSquared(nodeorg, childorg)*penalty;//bots on same team's path are more expensive
