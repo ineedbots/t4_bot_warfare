@@ -15,7 +15,7 @@ added()
 	
 	self set_diff();
 	
-	//self set_class(rankxp);
+	self set_class(rankxp);
 }
 
 /*
@@ -30,8 +30,9 @@ connected()
 	self thread difficulty();
 	self thread teamWatch();
 	self thread classWatch();
-	//self thread onBotSpawned();
-	//self thread onSpawned();
+	self thread onBotSpawned();
+	self thread onSpawned();
+	self thread onDeath();
 }
 
 /*
@@ -167,6 +168,22 @@ bot_cry_for_help( attacker )
 				break;
 			}
 		}
+	}
+}
+
+/*
+	Allows the bot to spawn when force respawn is disabled
+	Watches when the bot dies
+*/
+onDeath()
+{
+	self endon("disconnect");
+
+	for(;;)
+	{
+		self waittill("death");
+
+		self.wantSafeSpawn = true;
 	}
 }
 
@@ -522,6 +539,7 @@ set_class(rankxp)
 	primaryGroups[2] = "weapon_shotgun";
 	primaryGroups[3] = "weapon_sniper";
 	primaryGroups[4] = "weapon_assault";
+	primaryGroups[4] = "weapon_hmg";
 	secondaryGroups = [];
 	secondaryGroups[0] = "weapon_pistol";
 	
@@ -533,14 +551,28 @@ set_class(rankxp)
 		att1 = get_random_attachment(primary, rank);
 		
 		perk2 = get_random_perk("perk2", rank);
+
 		if(perk2 != "specialty_twoprimaries")
 			secondary = get_random_weapon(secondaryGroups, rank);
 		else
-			secondary = get_random_weapon(primaryGroups, rank);
+		{
+			secondary = "";
+
+			while(secondary == "")
+			{
+				secondary = get_random_weapon(primaryGroups, rank);
+
+				if (primary == secondary)
+					secondary = "";
+			}
+		}
 		att2 = get_random_attachment(secondary, rank);
+
 		perk1 = get_random_perk("perk1", rank, att1, att2);
 		
 		perk3 = get_random_perk("perk3", rank);
+		perk4 = get_random_perk("perk4", rank);
+		secgren = get_random_sec_grenade(perk1);
 		gren = get_random_grenade(perk1);
 		camo = randomInt(8);
 	
@@ -551,7 +583,9 @@ set_class(rankxp)
 		self setStat ( 200+(i*10)+5, level.perkReferenceToIndex[perk1] );
 		self setStat ( 200+(i*10)+6, level.perkReferenceToIndex[perk2] );
 		self setStat ( 200+(i*10)+7, level.perkReferenceToIndex[perk3] );
-		self setStat ( 200+(i*10)+8, level.weaponReferenceToIndex[gren] );
+		self setStat ( 200+(i*10)+105, level.perkReferenceToIndex[perk4] );
+		self setStat ( 200+(i*10)+8, level.weaponReferenceToIndex[secgren] );
+		self setStat ( 200+(i*10)+0, level.weaponReferenceToIndex[gren] );
 		self setStat ( 200+(i*10)+9, camo);
 	}
 }
@@ -577,13 +611,13 @@ get_random_attachment(weapon, rank)
 		
 		if(reasonable)
 		{
-			switch(att)
+			/*switch(att)
 			{
 				case "acog":
 					if(weapon != "m40a3")
 						continue;
 					break;
-			}
+			}*/
 		}
 		
 		return att;
@@ -621,9 +655,13 @@ get_random_perk(perkslot, rank, att1, att2)
 		{
 			switch(ref)
 			{
-				case "specialty_parabolic":
+				case "specialty_shades":
+				case "specialty_pin_back":
+				case "specialty_flakjacket":
+				case "specialty_reconnaissance":
+				case "specialty_fireproof":
 				case "specialty_holdbreath":
-				case "specialty_weapon_c4":
+				case "specialty_gas_mask":
 				case "specialty_explosivedamage":
 				case "specialty_twoprimaries":
 					continue;
@@ -654,9 +692,9 @@ get_random_perk(perkslot, rank, att1, att2)
 get_random_grenade(perk1)
 {
 	possibles = [];
-	possibles[0] = "flash_grenade";
-	possibles[1] = "smoke_grenade";
-	possibles[2] = "concussion_grenade";
+	possibles[0] = "frag_grenade";
+	possibles[1] = "molotov";
+	possibles[2] = "sticky_grenade";
 	
 	reasonable = GetDvarInt("bots_loadout_reasonable");
 	
@@ -668,12 +706,41 @@ get_random_grenade(perk1)
 		{
 			switch(possible)
 			{
-				case "smoke_grenade":
+				case "molotov":
+					continue;
+			}
+		}
+			
+		return possible;
+	}
+}
+
+/*
+	Returns a random grenade for the bot.
+*/
+get_random_sec_grenade(perk1)
+{
+	possibles = [];
+	possibles[0] = "m8_white_smoke";
+	possibles[1] = "signal_flare";
+	possibles[2] = "tabun_gas";
+	
+	reasonable = GetDvarInt("bots_loadout_reasonable");
+	
+	for(;;)
+	{
+		possible = possibles[randomInt(possibles.size)];
+		
+		if(reasonable)
+		{
+			switch(possible)
+			{
+				case "m8_white_smoke":
 					continue;
 			}
 		}
 		
-		if(perk1 == "specialty_specialgrenade" && possible == "smoke_grenade")
+		if(perk1 == "specialty_specialgrenade" && possible == "m8_white_smoke")
 			continue;
 			
 		return possible;
@@ -710,19 +777,11 @@ get_random_weapon(groups, rank)
 		
 		if(reasonable)
 		{
-			switch(ref)
+			/*switch(ref)
 			{
-				case "skorpion":
-				case "uzi":
-				case "m21":
-				case "dragunov":
-				case "saw":
-				case "mp44":
-				case "m14":
-				case "g3":
-				case "m1014":
+				case "":
 					continue;
-			}
+			}*/
 		}
 		
 		if(!isItemUnlocked(ref, rank))
@@ -799,6 +858,7 @@ onSpawned()
 		
 		self.bot_lock_goal = false;
 		self.help_time = undefined;
+		self.bot_was_follow_script_update = undefined;
 	}
 }
 
@@ -818,6 +878,9 @@ onBotSpawned()
 	}
 }
 
+/*
+	Starts all the bot thinking
+*/
 start_bot_threads()
 {
 	self endon("disconnect");
