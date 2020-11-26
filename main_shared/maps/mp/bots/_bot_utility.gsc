@@ -52,7 +52,7 @@ is_bot()
 */
 BotChangeToWeapon(weap)
 {
-	//self maps\mp\bots\_bot_internal::changeToWeap(weap);
+	self maps\mp\bots\_bot_internal::changeToWeap(weap);
 }
 
 /*
@@ -60,7 +60,7 @@ BotChangeToWeapon(weap)
 */
 BotPressAttack(time)
 {
-//	self maps\mp\bots\_bot_internal::pressFire(time);
+	self maps\mp\bots\_bot_internal::pressFire(time);
 }
 
 /*
@@ -68,7 +68,7 @@ BotPressAttack(time)
 */
 BotPressADS(time)
 {
-	//self maps\mp\bots\_bot_internal::pressADS(time);
+	self maps\mp\bots\_bot_internal::pressADS(time);
 }
 
 /*
@@ -76,7 +76,7 @@ BotPressADS(time)
 */
 BotPressFrag(time)
 {
-	//self maps\mp\bots\_bot_internal::frag(time);
+	self maps\mp\bots\_bot_internal::frag(time);
 }
 
 /*
@@ -84,7 +84,7 @@ BotPressFrag(time)
 */
 BotPressSmoke(time)
 {
-	//self maps\mp\bots\_bot_internal::smoke(time);
+	self maps\mp\bots\_bot_internal::smoke(time);
 }
 
 /*
@@ -323,14 +323,6 @@ inLastStand()
 }
 
 /*
-	Returns if we are stunned.
-*/
-IsStunned()
-{
-	return (isdefined(self.concussionEndTime) && self.concussionEndTime > gettime());
-}
-
-/*
 	Returns if we are beingArtilleryShellshocked 
 */
 isArtShocked()
@@ -352,6 +344,22 @@ isBombCarrier()
 isInUse()
 {
 	return (isDefined(self.inUse) && self.inUse);
+}
+
+/*
+	is flared
+*/
+IsFlared()
+{
+	return (isdefined(self.inFlareVisionArea) && self.inFlareVisionArea && !self hasPerk("specialty_shades"));
+}
+
+/*
+	Is gased
+*/
+isGased()
+{
+	return (isdefined(self.inPoisonArea) && self.inPoisonArea && !self hasPerk("specialty_gas_mask"));
 }
 
 /*
@@ -382,9 +390,11 @@ getValidGrenade()
 {
 	grenadeTypes = [];
 	grenadeTypes[grenadeTypes.size] = "frag_grenade_mp";
-	grenadeTypes[grenadeTypes.size] = "smoke_grenade_mp";
-	grenadeTypes[grenadeTypes.size] = "flash_grenade_mp";
-	grenadeTypes[grenadeTypes.size] = "concussion_grenade_mp";
+	grenadeTypes[grenadeTypes.size] = "molotov_mp";
+	grenadeTypes[grenadeTypes.size] = "m8_white_smoke_mp";
+	grenadeTypes[grenadeTypes.size] = "tabun_gas_mp";
+	grenadeTypes[grenadeTypes.size] = "sticky_grenade_mp";
+	grenadeTypes[grenadeTypes.size] = "signal_flare_mp";
 	
 	possibles = [];
 	
@@ -398,6 +408,9 @@ getValidGrenade()
 			
 		possibles[possibles.size] = grenadeTypes[i];
 	}
+
+	if (!possibles.size)
+		return undefined;
 	
 	return random(possibles);
 }

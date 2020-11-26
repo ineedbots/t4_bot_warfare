@@ -56,7 +56,6 @@ connected()
 	self.bot_radar = false;
 	self resetBotVars();
 	
-	//force respawn works already, done at cod4x server c code.
 	self thread onPlayerSpawned();
 	self thread bot_skip_killcam();
 	self thread onUAVUpdate();
@@ -84,7 +83,7 @@ doUAVUpdate()
 	self endon("disconnect");
 	self endon("radar_timer_kill");
 	
-	self.bot_radar = true;//wtf happened to hasRadar? its bugging out, something other than script is touching it
+	self.bot_radar = true;
 	
 	wait level.radarViewTime;
 	
@@ -117,6 +116,7 @@ resetBotVars()
 	self.bot.target_this_frame = undefined;
 	self.bot.after_target = undefined;
 	self.bot.after_target_pos = undefined;
+	self.bot.moveTo = self.origin;
 	
 	self.bot.script_aimpos = undefined;
 	
@@ -129,6 +129,7 @@ resetBotVars()
 	self.bot.astar = [];
 	self.bot.stop_move = false;
 	self.bot.greedy_path = false;
+	self.bot.climbing = false;
 	
 	self.bot.isfrozen = false;
 	self.bot.sprintendtime = -1;
@@ -186,9 +187,52 @@ onPlayerSpawned()
 		self thread onLastStand();
 		
 		self thread reload_watch();
+		self thread doBotMovement();
 		self thread sprint_watch();
 		
 		self thread spawned();
+	}
+}
+
+/*
+	Bot moves towards the point
+*/
+doBotMovement()
+{
+	self endon("disconnect");
+	self endon("death");
+
+	for (;;)
+	{
+		wait 0.05;
+
+		waittillframeend;
+		move_To = self.bot.moveTo;
+		angles = self GetPlayerAngles();
+		dir = (0, 0, 0);
+
+		if (DistanceSquared(self.origin, move_To) >= 49)
+		{
+			cosa = cos(0-angles[1]);
+			sina = sin(0-angles[1]);
+
+			// get the direction
+			dir = move_To - self.origin;
+
+			// rotate our direction according to our angles
+			dir = (dir[0] * cosa - dir[1] * sina,
+						dir[0] * sina + dir[1] * cosa,
+						0);
+
+			// make the length 127
+			dir = VectorNormalize(dir) * 127;
+
+			// invert the second component as the engine requires this
+			dir = (dir[0], 0-dir[1], 0);
+		}
+
+		// move!
+		self botMovement(int(dir[0]), int(dir[1]));
 	}
 }
 
@@ -341,6 +385,8 @@ stance()
 	for(;;)
 	{
 		self waittill_either("finished_static_waypoints", "new_static_waypoint");
+
+		self.bot.climbing = false;
 		
 		if(self.bot.isfrozen)
 			continue;
@@ -349,8 +395,14 @@ stance()
 		if(self.bot.next_wp != -1)
 			toStance = level.waypoints[self.bot.next_wp].type;
 
+		if (!isDefined(toStance))
+			toStance = "crouch";
+
 		if(toStance == "climb")
+		{
+			self.bot.climbing = true;
 			toStance = "stand";
+		}
 			
 		if(toStance != "stand" && toStance != "crouch" && toStance != "prone")
 			toStance = "crouch";
@@ -399,6 +451,9 @@ grenade_danger()
 		self waittill("grenade danger", grenade, attacker, weapname);
 		
 		if(!isDefined(grenade))
+			continue;
+
+		if (!getDvarInt("bots_play_nade"))
 			continue;
 		
 		if(weapname != "frag_grenade_mp")
@@ -599,7 +654,7 @@ target()
 	{
 		wait 0.05;
 		
-		if(self maps\mp\_flashgrenades::isFlashbanged())
+		if(self isFlared())
 			continue;
 	
 		myEye = self GetEyePos();
@@ -847,6 +902,9 @@ watchToLook()
 			
 		if(randomInt(100) > self.pers["bots"]["behavior"]["jump"])
 			continue;
+
+		if (!getDvarInt("bots_play_jumpdrop"))
+			continue;
 		
 		thetime = getTime();
 		if(isDefined(self.bot.jump_time) && thetime - self.bot.jump_time <= 5000)
@@ -915,12 +973,12 @@ aim()
 	{
 		wait 0.05;
 		
-		if(level.inPrematchPeriod || level.gameEnded || self.bot.isfrozen || self maps\mp\_flashgrenades::isFlashbanged())//because cod4x aim is hacky setPlayerAngles, we gotta check if inPrematchPeriod etc
+		if(level.inPrematchPeriod || level.gameEnded || self.bot.isfrozen || self isFlared())
 			continue;
 			
 		aimspeed = self.pers["bots"]["skill"]["aim_time"];
 
-		if(self IsStunned() || self isArtShocked())
+		if(self IsGased() || self isArtShocked())
 			aimspeed = 1;
 
 		eyePos = self getEyePos();
@@ -973,7 +1031,7 @@ aim()
 							if(!self.bot.isfraggingafter && !self.bot.issmokingafter)
 							{
 								nade = self getValidGrenade();
-								if(isDefined(nade) && rand <= self.pers["bots"]["behavior"]["nade"] && bulletTracePassed(eyePos, eyePos + (0, 0, 75), false, self) && bulletTracePassed(last_pos, last_pos + (0, 0, 100), false, target) && dist > level.bots_minGrenadeDistance && dist < level.bots_maxGrenadeDistance)
+								if(isDefined(nade) && rand <= self.pers["bots"]["behavior"]["nade"] && bulletTracePassed(eyePos, eyePos + (0, 0, 75), false, self) && bulletTracePassed(last_pos, last_pos + (0, 0, 100), false, target) && dist > level.bots_minGrenadeDistance && dist < level.bots_maxGrenadeDistance && getDvarInt("bots_play_nade"))
 								{
 									if(nade == "frag_grenade_mp")
 										self thread frag(2.5);
@@ -991,7 +1049,7 @@ aim()
 							self thread pressADS();
 					}
 					
-					self botLookAt(last_pos + (0, 0, self getEyeHeight() + nadeAimOffset), aimspeed);
+					self thread bot_lookat(last_pos + (0, 0, self getEyeHeight() + nadeAimOffset), aimspeed);
 					continue;
 				}
 
@@ -1007,9 +1065,9 @@ aim()
 						conedot = getConeDot(aimpos, eyePos, angles);
 						
 						if(!nadeAimOffset && conedot > 0.999 && lengthsquared(aimoffset) < 0.05)
-							self botLookAtPlayer(target, bone);
+							self thread bot_lookat(aimpos, 0.05);
 						else
-							self botLookAt(aimpos, aimspeed);
+							self thread bot_lookat(aimpos, aimspeed);
 					}
 					else
 					{
@@ -1020,10 +1078,10 @@ aim()
 
 						conedot = getConeDot(aimpos, eyePos, angles);
 
-						self botLookAt(aimpos, aimspeed);
+						self thread bot_lookat(aimpos, aimspeed);
 					}
 					
-					if(isplay && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time)
+					if(isplay && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && getDvarInt("bots_play_knife"))
 					{
 						self clear_bot_after_target();
 						self thread knife();
@@ -1041,7 +1099,7 @@ aim()
 					
 					if (trace_time > reaction_time)
 					{
-						if((!canADS || self playerads() == 1.0 || self InLastStand() || self GetStance() == "prone") && (conedot > 0.95 || dist < level.bots_maxKnifeDistance))
+						if((!canADS || self playerads() == 1.0 || self InLastStand() || self GetStance() == "prone") && (conedot > 0.95 || dist < level.bots_maxKnifeDistance) && getDvarInt("bots_play_fire"))
 							self botFire();
 
 						if (isplay)
@@ -1067,7 +1125,7 @@ aim()
 			aimpos = last_pos + (0, 0, self getEyeHeight() + nadeAimOffset);
 			conedot = getConeDot(aimpos, eyePos, angles);
 
-			self botLookAt(aimpos, aimspeed);
+			self thread bot_lookat(aimpos, aimspeed);
 
 			if(!self canFire(curweap) || !self isInRange(dist, curweap))
 				continue;
@@ -1076,7 +1134,7 @@ aim()
 			if (canADS)
 				self thread pressADS();
 
-			if((!canADS || self playerads() == 1.0 || self InLastStand() || self GetStance() == "prone") && (conedot > 0.95 || dist < level.bots_maxKnifeDistance))
+			if((!canADS || self playerads() == 1.0 || self InLastStand() || self GetStance() == "prone") && (conedot > 0.95 || dist < level.bots_maxKnifeDistance) && getDvarInt("bots_play_fire"))
 				self botFire();
 			
 			continue;
@@ -1086,22 +1144,23 @@ aim()
 		{
 			forwardPos = anglesToForward(level.waypoints[self.bot.next_wp].angles) * 1024;
 
-			self botLookAt(eyePos + forwardPos, aimspeed);
+			self thread bot_lookat(eyePos + forwardPos, aimspeed);
 		}
 		else if (isDefined(self.bot.script_aimpos))
 		{
-			self botLookAt(self.bot.script_aimpos, aimspeed);
+			self thread bot_lookat(self.bot.script_aimpos, aimspeed);
 		}
 		else
 		{
 			lookat = undefined;
-			if(self.bot.second_next_wp != -1 && !self.bot.issprinting)
+
+			if(self.bot.second_next_wp != -1 && !self.bot.issprinting && !self.bot.climbing)
 				lookat = level.waypoints[self.bot.second_next_wp].origin;
 			else if(isDefined(self.bot.towards_goal))
 				lookat = self.bot.towards_goal;
 			
 			if(isDefined(lookat))
-				self botLookAt(lookat + (0, 0, self getEyeHeight()), aimspeed);
+				self thread bot_lookat(lookat + (0, 0, self getEyeHeight()), aimspeed);
 		}
 	}
 }
@@ -1209,11 +1268,14 @@ walk()
 		wait 0.05;
 		
 		self botMoveTo(self.origin);
+
+		if (!getDvarInt("bots_play_move"))
+			continue;
 		
 		if(level.inPrematchPeriod || level.gameEnded || self.bot.isfrozen || self.bot.stop_move)
 			continue;
 			
-		if(self maps\mp\_flashgrenades::isFlashbanged())
+		if(self isFlared())
 		{
 			self botMoveTo(self.origin + self GetVelocity()*500);
 			continue;
@@ -1513,6 +1575,8 @@ movetowards(goal)
 				
 				randomDir = self getRandomLargestStafe(stucks);
 			
+				self knife(); // knife glass
+				wait 0.25;
 				self botMoveTo(randomDir);
 				wait stucks;
 			}
@@ -1814,9 +1878,61 @@ prone()
 */
 changeToWeap(weap)
 {
-#if isSyscallDefined botWeapon
 	self botWeapon(weap);
-#else
-	self setSpawnWeapon(weap);
-#endif
+}
+
+/*
+	Bot will move towards here
+*/
+botMoveTo(where)
+{
+	self.bot.moveTo = where;
+}
+
+/*
+	Bots will look at the pos
+*/
+bot_lookat(pos, time)
+{
+	self notify("bots_aim_overlap");
+	self endon("bots_aim_overlap");
+	self endon("disconnect");
+	self endon("death");
+	self endon("spawned_player");
+	level endon ( "game_ended" );
+
+	if (level.gameEnded || level.inPrematchPeriod || self.bot.isfrozen)
+		return;
+
+	if (!isDefined(pos))
+		return;
+
+	steps = time / 0.05;
+	if (!isDefined(steps) || steps <= 0)
+		steps = 1;
+
+	myAngle=self getPlayerAngles();
+	angles = VectorToAngles( (pos - self GetEyePos()) - anglesToForward(myAngle) );
+	
+	X=(angles[0]-myAngle[0]);
+	while(X > 170.0)
+		X=X-360.0;
+	while(X < -170.0)
+		X=X+360.0;
+	X=X/steps;
+	
+	Y=(angles[1]-myAngle[1]);
+	while(Y > 180.0)
+		Y=Y-360.0;
+	while(Y < -180.0)
+		Y=Y+360.0;
+		
+	Y=Y/steps;
+	
+	for(i=0;i<steps;i++)
+	{
+		myAngle=(myAngle[0]+X,myAngle[1]+Y,0);
+		self setPlayerAngles(myAngle);
+		wait 0.05;
+	}
 }
