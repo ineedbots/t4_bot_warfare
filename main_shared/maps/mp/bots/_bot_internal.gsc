@@ -1286,7 +1286,7 @@ walk()
 		{
 			curweap = self getCurrentWeapon();
 			
-			if(self.bot.target.entity.classname == "script_vehicle" || self.bot.isfraggingafter || self.bot.issmokingafter)
+			if(self.bot.isfraggingafter || self.bot.issmokingafter)
 			{
 				continue;
 			}
