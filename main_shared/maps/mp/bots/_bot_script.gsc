@@ -575,11 +575,16 @@ set_class(rankxp)
 		secgren = get_random_sec_grenade(perk1);
 		gren = get_random_grenade(perk1);
 		camo = randomInt(8);
+
+		if (att1 == "bayonet")
+			att1 = "BAYONET";
+		if (att2 == "bayonet")
+			att2 = "BAYONET"; // t4 is messed up lmao
 	
 		self setStat ( 200+(i*10)+1, level.weaponReferenceToIndex[primary] );
-		self setStat ( 200+(i*10)+2, level.weaponAttachmentReferenceToIndex[att1] );
+		if (att1 != "none") self setStat ( 200+(i*10)+2, level.weaponAttachmentReferenceToIndex[att1] );
 		self setStat ( 200+(i*10)+3, level.weaponReferenceToIndex[secondary] );
-		self setStat ( 200+(i*10)+4, level.weaponAttachmentReferenceToIndex[att2] );
+		if (att2 != "none") self setStat ( 200+(i*10)+4, level.weaponAttachmentReferenceToIndex[att2] );
 		self setStat ( 200+(i*10)+5, level.perkReferenceToIndex[perk1] );
 		self setStat ( 200+(i*10)+6, level.perkReferenceToIndex[perk2] );
 		self setStat ( 200+(i*10)+7, level.perkReferenceToIndex[perk3] );

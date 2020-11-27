@@ -3,6 +3,10 @@ init()
 	level.clientid = 0;
 
 	level thread onPlayerConnect();
+
+	wait 1;
+
+	level.xpScale = getDvarInt("scr_xpscale_");
 }
 
 onPlayerConnect()
