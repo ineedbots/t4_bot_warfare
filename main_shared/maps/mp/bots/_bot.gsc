@@ -653,7 +653,7 @@ addBots()
 		{
 			tempBot = random(getBotArray());
 			if (isDefined(tempBot))
-				kick( tempBot getEntityNumber(), "EXE_PLAYERKICKED" );
+				tempBot RemoveTestClient();
 		}
 	}
 }
