@@ -948,6 +948,8 @@ start_bot_threads()
 
 		// war and cap
 	}
+
+	// revive
 }
 
 /*
@@ -2156,7 +2158,7 @@ bot_weapon_think()
 		
 		if(weap == "")
 			continue;
-		self sayall(weap);
+			
 		self thread ChangeToWeapon(weap);
 	}
 }
