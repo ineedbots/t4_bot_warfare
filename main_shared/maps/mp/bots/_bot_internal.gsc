@@ -671,6 +671,9 @@ target()
 			self.bot.target = undefined;
 			hasTarget = false;
 		}
+
+		// reduce fov if ads'ing
+		myFov *= 1 - 0.5 * self PlayerADS();
 		
 		playercount = level.players.size;
 		for(i = -1; i < playercount; i++)
