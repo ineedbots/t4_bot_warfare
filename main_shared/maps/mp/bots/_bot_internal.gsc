@@ -495,9 +495,6 @@ watch_grenade(grenade)
 		
 		if(self.bot.isfraggingafter || self.bot.issmokingafter)
 			continue;
-
-		if (self.disabledWeapon)
-			continue;
 		
 		self thread frag();
 	}
@@ -1033,10 +1030,14 @@ aim()
 								nade = self getValidGrenade();
 								if(isDefined(nade) && rand <= self.pers["bots"]["behavior"]["nade"] && bulletTracePassed(eyePos, eyePos + (0, 0, 75), false, self) && bulletTracePassed(last_pos, last_pos + (0, 0, 100), false, target) && dist > level.bots_minGrenadeDistance && dist < level.bots_maxGrenadeDistance && getDvarInt("bots_play_nade"))
 								{
-									if(nade == "frag_grenade_mp")
-										self thread frag(2.5);
+									time = 0.5;
+									if (nade == "frag_grenade_mp")
+										time = 2;
+
+									if(!isSecondaryGrenade(nade))
+										self thread frag(time);
 									else
-										self thread smoke(0.5);
+										self thread smoke(time);
 										
 									self notify("kill_goal");
 								}

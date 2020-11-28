@@ -416,6 +416,14 @@ getValidGrenade()
 }
 
 /*
+	If weap is a secondary gnade
+*/
+isSecondaryGrenade(gnade)
+{
+	return (gnade == "tabun_gas_mp" || gnade == "m8_white_smoke_mp" || gnade == "signal_flare_mp");
+}
+
+/*
 	Returns if the given weapon is full auto.
 */
 WeaponIsFullAuto(weap)
