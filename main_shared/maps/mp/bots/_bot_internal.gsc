@@ -559,7 +559,7 @@ updateBones()
 		if (!isDefined(self.bot.target))
 			continue;
 
-		self.bot.target.bone = random(bones);
+		self.bot.target.bone = PickRandom(bones);
 	}
 }
 
@@ -1238,6 +1238,9 @@ isInRange(dist, curweap)
 	
 	if(weapclass == "spread" && dist > level.bots_maxShotgunDistance)
 		return false;
+
+	if (curweap == "m2_flamethrower_mp" && dist > level.bots_maxShotgunDistance)
+		return false;
 		
 	return true;
 }
@@ -1286,6 +1289,9 @@ walk()
 		if(hasTarget)
 		{
 			curweap = self getCurrentWeapon();
+
+			if ((isPlayer(self.bot.target.entity) && self.bot.target.entity isInVehicle()) || self.bot.target.entity.classname == "script_vehicle")
+				continue;
 			
 			if(self.bot.isfraggingafter || self.bot.issmokingafter)
 			{

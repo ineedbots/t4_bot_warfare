@@ -408,11 +408,19 @@ getValidGrenade()
 			
 		possibles[possibles.size] = grenadeTypes[i];
 	}
-
-	if (!possibles.size)
-		return undefined;
 	
-	return random(possibles);
+	return PickRandom(possibles);
+}
+
+/*
+	Picks a random thing
+*/
+PickRandom(arr)
+{
+	if (!arr.size)
+		return undefined;
+
+	return arr[randomInt(arr.size)];
 }
 
 /*

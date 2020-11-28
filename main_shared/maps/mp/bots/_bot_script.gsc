@@ -908,6 +908,7 @@ start_bot_threads()
 	if (getDvarInt("bots_play_target_other"))
 	{
 		self thread bot_target_vehicle();
+		self thread bot_kill_dog_think();
 		self thread bot_equipment_kill_think();
 	}
 
@@ -944,6 +945,8 @@ start_bot_threads()
 
 		self thread bot_sd_defenders();
 		self thread bot_sd_attackers();
+
+		// war and cap
 	}
 }
 
@@ -1331,7 +1334,7 @@ botThrowGrenade(nade, time)
 	if (!self GetAmmoCount(nade))
 		return false;
 
-	if (isSecondaryNade(nade))
+	if (isSecondaryGrenade(nade))
 		self thread BotPressSmoke(time);
 	else
 		self thread BotPressFrag(time);
@@ -1398,7 +1401,7 @@ bot_think_camp()
 
 			campSpots[campSpots.size] = level.waypointsCamp[i];
 		}
-		campSpot = random(campSpots);
+		campSpot = PickRandom(campSpots);
 
 		if (!isDefined(campSpot))
 			continue;
@@ -1517,7 +1520,7 @@ bot_think_follow()
 
 			follows[follows.size] = player;
 		}
-		toFollow = random(follows);
+		toFollow = PickRandom(follows);
 
 		if (!isDefined(toFollow))
 			continue;
@@ -1659,7 +1662,7 @@ bot_use_tube_think()
 				
 				tubeWps[tubeWps.size] = level.waypointsTube[i];
 			}
-			tubeWp = random(tubeWps);
+			tubeWp = PickRandom(tubeWps);
 			
 			myEye = self GetEye();
 			if (!isDefined(tubeWp) || self HasScriptGoal() || self.bot_lock_goal)
@@ -1748,8 +1751,8 @@ bot_use_equipment_think()
 		}
 
 		nade = undefined;
-		if (self GetAmmoCount("claymore_mp"))
-			nade = "claymore_mp";
+		if (self GetAmmoCount("mine_bouncing_betty_mp"))
+			nade = "mine_bouncing_betty_mp";
 		
 		if (!isDefined(nade))
 			continue;
@@ -1782,7 +1785,7 @@ bot_use_equipment_think()
 
 				clayWps[clayWps.size] = level.waypointsClay[i];
 			}
-			clayWp = random(clayWps);
+			clayWp = PickRandom(clayWps);
 			
 			if (!isDefined(clayWp) || self HasScriptGoal() || self.bot_lock_goal)
 			{
@@ -1892,7 +1895,7 @@ bot_use_grenade_think()
 
 				nadeWps[nadeWps.size] = level.waypointsGren[i];
 			}
-			nadeWp = random(nadeWps);
+			nadeWp = PickRandom(nadeWps);
 
 			myEye = self GetEye();
 			if (!isDefined(nadeWp) || self HasScriptGoal() || self.bot_lock_goal)
@@ -2004,8 +2007,8 @@ bot_listen_to_steps()
 			continue;
 			
 		dist = level.bots_listenDist;
-		if(self hasPerk("specialty_parabolic"))
-			dist *= 1.4;
+		//if(self hasPerk("specialty_parabolic"))
+		//	dist *= 1.4;
 		
 		dist *= dist;
 		
@@ -2111,15 +2114,15 @@ bot_weapon_think()
 		{
 			threat = self getThreat();
 			
-			if(threat.classname == "script_vehicle" && self getAmmoCount("rpg_mp"))
+			if(((isPlayer(threat) && threat isInVehicle()) || threat.classname == "script_vehicle") && self getAmmoCount("bazooka_mp"))
 			{
-				if (curWeap != "rpg_mp")
-					self thread ChangeToWeapon("rpg_mp");
+				if (curWeap != "bazooka_mp")
+					self thread ChangeToWeapon("bazooka_mp");
 				continue;
 			}
 		}
 		
-		if(curWeap != "none" && self getAmmoCount(curWeap))
+		if(curWeap != "none" && self getAmmoCount(curWeap) && curWeap != "satchel_charge_mp" && curWeap != "squadcommand_mp")
 		{
 			if(randomInt(100) > self.pers["bots"]["behavior"]["switch"])
 				continue;
@@ -2144,7 +2147,7 @@ bot_weapon_think()
 			if (maps\mp\gametypes\_weapons::isGrenade( weapon ))
 				continue;
 				
-			if(curWeap == weapon || weapon == "c4_mp" || weapon == "none" || weapon == "claymore_mp" || weapon == "")//c4 no work
+			if(curWeap == weapon || weapon == "satchel_charge_mp" || weapon == "none" || weapon == "mine_bouncing_betty_mp" || weapon == "" || weapon == "squadcommand_mp")//c4 no work
 				continue;
 				
 			weap = weapon;
@@ -2153,7 +2156,7 @@ bot_weapon_think()
 		
 		if(weap == "")
 			continue;
-		
+		self sayall(weap);
 		self thread ChangeToWeapon(weap);
 	}
 }
@@ -2193,22 +2196,14 @@ bot_killstreak_think()
 					continue;
 				break;
 		
-			case "helicopter_mp":
-				chopper = level.chopper;
-
-				if (isDefined(chopper) && !isEntity(chopper))
-					chopper = level.chopper[self.team];
-
-				if (isDefined(chopper))
-					continue;
-
-				if (isDefined( level.mannedchopper ))
+			case "dogs_mp":
+				if (isDefined( level.dogs ))
 					continue;
 
 				break;
 		
-			case "airstrike_mp":
-				if(isDefined( level.airstrikeInProgress ))
+			case "artillery_mp":
+				if(isDefined( level.artilleryInProgress ))
 					continue;
 					
 				players = [];
@@ -2234,7 +2229,7 @@ bot_killstreak_think()
 					players[players.size] = player;
 				}
 				
-				target = random(players);
+				target = PickRandom(players);
 				
 				if(isDefined(target))
 					targetPos = target.origin + (randomIntRange((8-self.pers["bots"]["skill"]["base"])*-75, (8-self.pers["bots"]["skill"]["base"])*75), randomIntRange((8-self.pers["bots"]["skill"]["base"])*-75, (8-self.pers["bots"]["skill"]["base"])*75), 0);
@@ -2247,7 +2242,7 @@ bot_killstreak_think()
 		}
 		
 		isAirstrikePos = isDefined(targetPos);
-		if(self.pers["hardPointItem"] == "airstrike_mp" && !isAirstrikePos)
+		if(self.pers["hardPointItem"] == "artillery_mp" && !isAirstrikePos)
 			continue;
 
 		self BotStopMoving(true);
@@ -2256,7 +2251,7 @@ bot_killstreak_think()
 		{
 			wait 1;
 
-			if (isAirstrikePos && !isDefined( level.airstrikeInProgress ))
+			if (isAirstrikePos && !isDefined( level.artilleryInProgress ))
 			{
 				self notify( "confirm_location", targetPos );
 				wait 1;
@@ -2313,7 +2308,7 @@ bot_uav_think()
 			if(distFromPlayer > dist)
 				continue;
 			
-			if((!isSubStr(player getCurrentWeapon(), "_silencer_") && player.bots_firing) || (self.bot_radar && !player hasPerk("specialty_gpsjammer")))
+			if((!isSubStr(player getCurrentWeapon(), "_silenced_") && !isSubStr(player getCurrentWeapon(), "_flash_") && player.bots_firing) || (self.bot_radar && !player hasPerk("specialty_gpsjammer")))
 			{
 				distSq = self.pers["bots"]["skill"]["help_dist"] * self.pers["bots"]["skill"]["help_dist"];
 				if (distFromPlayer < distSq && bulletTracePassed(self getEyePos(), player getTagOrigin( "j_spineupper" ), false, player))
@@ -2336,7 +2331,7 @@ bot_uav_think()
 }
 
 /*
-	Bot logic for detecting the chopper as an enemy.
+	Bots target vehicles
 */
 bot_target_vehicle()
 {
@@ -2345,65 +2340,45 @@ bot_target_vehicle()
 	
 	for(;;)
 	{
-		wait( RandomIntRange( 2, 4 ) );
-
-		if(self.pers["bots"]["skill"]["base"] <= 1)
-			continue;
+		wait( RandomIntRange( 1, 3 ) );
 		
 		if(self HasScriptEnemy())
 			continue;
-			
-		if(!self getAmmoCount("rpg_mp") && self BotGetRandom() < 90)
-			continue;
-
-		chopper = level.chopper;
-
-		if(isDefined(chopper) && !isEntity(chopper))
-		{
-			chopper = level.chopper[ level.otherTeam[self.team] ];
-		}
-
-		if (!isdefined(chopper))
-			continue;
-		
-		if(!isDefined(level.bot_chopper) || !level.bot_chopper)//must be crashing or leaving
-			continue;
-			
-		if(isDefined(chopper.owner) && chopper.owner == self)
-			continue;
-			
-		if(chopper.team == self.team && level.teamBased)
-			continue;
-			
-		if(!bulletTracePassed( self getEyePos(), chopper.origin + (0, 0, -5), false, chopper ))
-			continue;
-			
-		self SetScriptEnemy( chopper, (0, 0, -5) );
-		self bot_attack_vehicle(chopper);
-		self ClearScriptEnemy();
-		self notify("bot_force_check_switch");
 	}
 }
 
 /*
-	Bot logic for how long to keep targeting chopper.
+	Bots target dogs
 */
-bot_attack_vehicle(chopper)
+bot_kill_dog_think()
 {
-	chopper endon( "death" );
-	chopper endon( "crashing" );
-	chopper endon( "leaving" );
+	self endon( "death" );
+	self endon( "disconnect" );
 	
-	wait_time = RandomIntRange( 7, 10 );
-
-	for ( i = 0; i < wait_time; i++ )
+	for(;;)
 	{
-		self notify("bot_force_check_switch");
-		wait( 1 );
+		wait( RandomIntRange( 1, 3 ) );
+		
+		if(self HasScriptEnemy())
+			continue;
 
-		if ( !IsDefined( chopper ) )
+		if(self.pers["bots"]["skill"]["base"] <= 1)
+			continue;
+
+		if (!isDefined(level.dogs))
+			continue;
+
+		hasRecon = self hasPerk("specialty_reconnaissance");
+		for(i = 0; i < level.dogs.size; i++)
 		{
-			return;
+			dog = level.dogs[i];
+			
+			if ( !isalive(dog) )
+				continue;
+			if(isdefined(dog.script_owner) && self == dog.script_owner)
+				continue;
+			if(level.teamBased && dog.aiteam == self.pers["team"])
+				continue;
 		}
 	}
 }
@@ -2446,7 +2421,7 @@ bot_equipment_kill_think()
 				continue;
 			}
 			
-			if (item.name != "c4_mp" && item.name != "claymore_mp")
+			if (item.name != "mine_bouncing_betty_mp" && item.name != "satchel_charge_mp")
 				continue;
 				
 			if(!hasDetectExp && !bulletTracePassed(myEye, item.origin+(0, 0, 0), false, item))
@@ -2712,7 +2687,7 @@ bot_dom_cap_think()
 		}
 		else if (flags.size)
 		{
-			flag = random(flags);
+			flag = PickRandom(flags);
 		}
 
 		if ( !isDefined(flag) )
@@ -3297,7 +3272,7 @@ bot_sd_defenders()
 			if (rand > 50)
 				site = self bot_array_nearest_curorigin(sites);
 			else
-				site = random(sites);
+				site = PickRandom(sites);
 			
 			if(!isDefined(site))
 				continue;
@@ -3546,7 +3521,7 @@ bot_sd_attackers()
 		if(rand > 50)
 			plant = self bot_array_nearest_curorigin(sites);
 		else
-			plant = random(sites);
+			plant = PickRandom(sites);
 		
 		if(!isDefined(plant))
 			continue;
