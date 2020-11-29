@@ -1377,10 +1377,94 @@ stop_go_target_on_death(tar)
 }
 
 /*
+	Wait for the revive to complete
+*/
+bot_revive_wait(revive)
+{
+	level endon("game_ended");
+	self endon("death");
+	self endon("disconnect");
+	self endon("bot_try_use_fail");
+	self endon("bot_try_use_success");
+
+	timer = 0;
+	for (reviveTime = GetDvarInt( "revive_time_taken" ); timer < reviveTime; timer += 0.05)
+	{
+		wait 0.05;
+
+		if (!isDefined(revive) || !isDefined(revive.revivetrigger))
+		{
+			self notify("bot_try_use_fail");
+			return;
+		}
+	}
+
+	self notify("bot_try_use_success");
+}
+
+/*
+	Bots revive
+*/
+bots_use_revive(revive)
+{
+	level endon("game_ended");
+
+	self.revivingTeammate = true;
+	revive.currentlyBeingRevived = true;
+	self BotFreezeControls(true);
+
+	self.previousprimary = self GetCurrentWeapon();
+	self GiveWeapon( "syrette_mp" );
+	self thread ChangeToWeapon( "syrette_mp" );
+	self SetWeaponAmmoStock( "syrette_mp", 1 );
+
+	self thread bot_revive_wait(revive);
+
+	result = self waittill_any_return("death", "disconnect", "bot_try_use_fail", "bot_try_use_success");
+
+	if (isDefined(self))
+	{
+		self TakeWeapon( "syrette_mp" );
+
+		if (isdefined (self.previousPrimary) && self.previousPrimary != "none")
+			self thread changeToWeapon(self.previousPrimary);
+
+		self.previousprimary = undefined;
+		self notify( "completedRevive" );
+		self.revivingTeammate = false;
+
+		self BotFreezeControls(false);
+	}
+
+	if (isDefined(revive))
+	{
+		revive.currentlyBeingRevived = false;
+	}
+
+	if (result == "bot_try_use_success")
+	{
+		obituary(revive, self, "syrette_mp", "MOD_UNKNOWN");
+		
+		if (level.rankedmatch)
+		{
+			self maps\mp\gametypes\_rank::giveRankXP( "revive", level.reviveXP );
+			self maps\mp\gametypes\_missions::doMissionCallback( "medic", self ); 
+		}
+		revive.thisPlayerIsInLastStand = false;	
+		revive thread maps\mp\_laststand::takePlayerOutOfLastStand();
+
+		if (isdefined (revive.previousPrimary) && revive.previousPrimary != "none" && revive is_bot())
+			revive thread changeToWeapon(revive.previousPrimary);
+	}
+}
+
+/*
 	Bots revive the player
 */
-bot_use_revive(revivePlayer)
+bot_use_revive_thread(revivePlayer)
 {
+	self thread bots_use_revive(revivePlayer);
+	self waittill_any("bot_try_use_fail", "bot_try_use_success");
 }
 
 /*
@@ -1449,7 +1533,7 @@ bot_revive_think()
 		
 		self SetScriptGoal( self.origin, 64 );
 		
-		self bot_use_revive(revivePlayer);
+		self bot_use_revive_thread(revivePlayer);
 		wait 1;
 		self ClearScriptGoal();
 	}
