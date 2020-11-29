@@ -949,7 +949,7 @@ start_bot_threads()
 		// war and cap
 	}
 
-	// revive
+	self thread bot_revive_think();
 }
 
 /*
@@ -1374,6 +1374,117 @@ stop_go_target_on_death(tar)
 	tar waittill_either("death", "disconnect");
 
 	self ClearScriptGoal();
+}
+
+/*
+	Bots revive the player
+*/
+bot_use_revive(revivePlayer)
+{
+}
+
+/*
+	Bots think to go revive
+*/
+bot_revive_think()
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	
+	for(;;)
+	{
+		wait randomintrange(2,5);
+	
+		if (!level.teamBased)
+			continue;
+
+		if (!self.canreviveothers)
+			continue;
+
+		if ( self HasScriptGoal() || self.bot_lock_goal )
+			continue;
+
+		revivePlayer = undefined;
+		for(i = 0; i < level.players.size; i++)
+		{
+			player = level.players[i];
+			
+			if(!isDefined(player.pers["team"]))
+				continue;
+			if(player == self)
+				continue;
+			if(self.pers["team"] != player.pers["team"])
+				continue;
+			if(!isDefined(player.revivetrigger))
+				continue;
+
+			if (isDefined(player.currentlyBeingRevived) && player.currentlyBeingRevived)
+				continue;
+
+			if (!isDefined(player.revivetrigger.bots))
+				player.revivetrigger.bots = 0;
+
+			if (player.revivetrigger.bots > 2)
+				continue;
+
+			revivePlayer = player;
+		}
+
+		if (!isDefined(revivePlayer))
+			continue;
+
+		self SetScriptGoal( revivePlayer.origin, 1 );
+		self thread bot_inc_bots(revivePlayer.revivetrigger, true);
+		self thread bot_go_revive(revivePlayer);
+	
+		event = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+		if (event != "new_goal")
+			self ClearScriptGoal();
+		
+		if(event != "goal" || (isDefined(revivePlayer.currentlyBeingRevived) && revivePlayer.currentlyBeingRevived) || !self isTouching(revivePlayer.revivetrigger) || self InLastStand() || self HasThreat())
+		{
+			continue;
+		}
+		
+		self SetScriptGoal( self.origin, 64 );
+		
+		self bot_use_revive(revivePlayer);
+		wait 1;
+		self ClearScriptGoal();
+	}
+}
+
+/*
+	Bots go to the revive
+*/
+bot_go_revive(revive)
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	level endon("game_ended");
+	self endon( "goal" );
+	self endon( "bad_path" );
+	self endon( "new_goal" );
+
+	for (;;)
+	{
+		wait 1;
+
+		if (!isDefined(revive))
+			break;
+
+		if (!isDefined(revive.revivetrigger))
+			break;
+
+		if (self isTouching(revive.revivetrigger))
+			break;
+	}
+
+	if(!isDefined(revive) || !isDefined(revive.revivetrigger))
+		self notify("bad_path");
+	else
+		self notify("goal");
 }
 
 /*
