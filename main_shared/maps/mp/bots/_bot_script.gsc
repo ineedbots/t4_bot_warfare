@@ -2346,6 +2346,66 @@ bot_target_vehicle()
 		
 		if(self HasScriptEnemy())
 			continue;
+
+		if(self.pers["bots"]["skill"]["base"] <= 1)
+			continue;
+
+		if (!IsDefined( level.vehicles_list ))
+			continue;
+
+		hasRecon = self hasPerk("specialty_reconnaissance");
+		myEye = self GetEyePos();
+		target = undefined;
+		myAngles = self GetPlayerAngles();
+
+		for(i = 0; i < level.players.size; i++)
+		{
+			player = level.players[i];
+			vehicle = player GetVehicleOccupied();
+			if(!isDefined(vehicle))
+				continue;
+			if(player == self)
+				continue;
+			if(level.teamBased && self.pers["team"] == player.pers["team"])
+				continue;
+
+			if(!bulletTracePassed(myEye, vehicle.origin + (0.0, 0.0, 5.0), false, vehicle))
+				continue;
+			if(getConeDot(vehicle.origin, self.origin, myAngles) < 0.6 && !hasRecon)
+				continue;
+
+			target = vehicle;
+		}
+
+		if (!isDefined(target))
+			continue;
+			
+		self SetScriptEnemy( target, (0, 0, 5) );
+		self bot_vehicle_attack(target);
+		self ClearScriptEnemy();
+	}
+}
+
+/*
+	How long to target a vehicle
+*/
+bot_vehicle_attack(target)
+{
+	target endon("death");
+	
+	wait_time = RandomIntRange( 14, 20 );
+
+	for ( i = 0; i < wait_time; i++ )
+	{
+		wait( 0.5 );
+
+		if ( !IsDefined( target ) )
+		{
+			return;
+		}
+
+		if (!target GetVehOccupants().size)
+			return;
 	}
 }
 
@@ -2359,7 +2419,7 @@ bot_kill_dog_think()
 	
 	for(;;)
 	{
-		wait( RandomIntRange( 1, 3 ) );
+		wait( 1 );
 		
 		if(self HasScriptEnemy())
 			continue;
@@ -2371,6 +2431,9 @@ bot_kill_dog_think()
 			continue;
 
 		hasRecon = self hasPerk("specialty_reconnaissance");
+		myEye = self GetEyePos();
+		targetDog = undefined;
+		myAngles = self GetPlayerAngles();
 		for(i = 0; i < level.dogs.size; i++)
 		{
 			dog = level.dogs[i];
@@ -2381,7 +2444,45 @@ bot_kill_dog_think()
 				continue;
 			if(level.teamBased && dog.aiteam == self.pers["team"])
 				continue;
+
+			if(getConeDot(dog.origin, self.origin, myAngles) < 0.6 && !hasRecon)
+				continue;
+
+			if(!bulletTracePassed(myEye, dog.origin+(0, 0, 5), false, dog))
+				continue;
+
+			targetDog = dog;
 		}
+
+		if (!isDefined(targetDog))
+			continue;
+
+		self SetScriptEnemy( targetDog, (0, 0, 5) );
+		self bot_dog_attack(targetDog);
+		self ClearScriptEnemy();
+	}
+}
+
+/*
+	How long to target a dog
+*/
+bot_dog_attack(dog)
+{
+	dog endon("death");
+	
+	wait_time = RandomIntRange( 14, 20 );
+
+	for ( i = 0; i < wait_time; i++ )
+	{
+		wait( 0.5 );
+
+		if ( !IsDefined( dog ) )
+		{
+			return;
+		}
+
+		if (!bulletTracePassed(self GetEyePos(), dog.origin+(0, 0, 5), false, dog))
+			return;
 	}
 }
 
