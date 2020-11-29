@@ -308,6 +308,10 @@ onLastStand()
 
 		while (self inLastStand())
 			wait 0.05;
+
+		waittillframeend;
+		if (isDefined(self.previousPrimary) && self.previousPrimary != "none")
+			self changeToWeap(self.previousPrimary);
 	}
 }
 

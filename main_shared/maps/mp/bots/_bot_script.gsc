@@ -1517,6 +1517,8 @@ bot_revive_think()
 		if (!isDefined(revivePlayer))
 			continue;
 
+		self.bot_lock_goal = true;
+
 		self SetScriptGoal( revivePlayer.origin, 1 );
 		self thread bot_inc_bots(revivePlayer.revivetrigger, true);
 		self thread bot_go_revive(revivePlayer);
@@ -1528,6 +1530,7 @@ bot_revive_think()
 		
 		if(event != "goal" || (isDefined(revivePlayer.currentlyBeingRevived) && revivePlayer.currentlyBeingRevived) || !self isTouching(revivePlayer.revivetrigger) || self InLastStand() || self HasThreat())
 		{
+			self.bot_lock_goal = false;
 			continue;
 		}
 		
@@ -1536,6 +1539,7 @@ bot_revive_think()
 		self bot_use_revive_thread(revivePlayer);
 		wait 1;
 		self ClearScriptGoal();
+		self.bot_lock_goal = false;
 	}
 }
 
