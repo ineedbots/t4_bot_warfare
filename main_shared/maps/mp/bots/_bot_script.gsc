@@ -4041,6 +4041,7 @@ bot_war()
 
 	myTeam = self.pers[ "team" ];
 	otherTeam = getOtherTeam( myTeam );
+	rand = self BotGetRandom();
 
 	for ( ;; )
 	{
@@ -4060,11 +4061,14 @@ bot_war()
 			continue;
 
 		// check if should cap
-		if (game["war_momentum"][self.team + "_multiplier"] == getDvarInt("twar_momentumMaxMultiplier"))
+		if (game["war_momentum"][myTeam + "_multiplier"] == getDvarInt("twar_momentumMaxMultiplier") ||
+			flag.numTouching[otherTeam] > flag.numTouching[myTeam] ||
+			rand > 90)
 		{
 		}
 		else
 		{
+			// build momentum around the flag
 		}
 	}
 }
