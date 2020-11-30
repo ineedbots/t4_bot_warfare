@@ -946,7 +946,7 @@ start_bot_threads()
 		self thread bot_sd_defenders();
 		self thread bot_sd_attackers();
 
-		// war and cap
+		self thread bot_cap();
 	}
 
 	self thread bot_revive_think();
@@ -3874,24 +3874,24 @@ bot_cap()
 	{
 		wait( randomintrange( 3, 5 ) );
 		
-		if ( self IsUsingRemote() || self.bot_lock_goal )
+		if ( self.bot_lock_goal )
 		{
 			continue;
 		}
 		
-		if(!isDefined(level.capZones))
+		if(!isDefined(level.teamFlagZones))
 			continue;
 		
 		if(!isDefined(level.teamFlags))
 			continue;
 		
 		myflag = level.teamFlags[myteam];
-		myzone = level.capZones[myteam];
+		myzone = level.teamFlagZones[myteam];
 		
 		theirflag = level.teamFlags[otherTeam];
-		theirzone = level.capZones[otherTeam];
+		theirzone = level.teamFlagZones[otherTeam];
 		
-		if(!myflag maps\mp\gametypes\_gameobjects::isHome())
+		if(myflag maps\mp\gametypes\_gameobjects::isObjectAwayFromHome())
 		{
 			carrier = myflag.carrier;
 			
@@ -3906,7 +3906,7 @@ bot_cap()
 			}
 			else
 			{
-				if(theirflag maps\mp\gametypes\_gameobjects::isHome() && randomint(100) < 50)
+				if(!theirflag maps\mp\gametypes\_gameobjects::isObjectAwayFromHome() && randomint(100) < 50)
 				{ //take their flag
 					self bot_cap_get_flag(theirflag);
 				}
@@ -3923,7 +3923,7 @@ bot_cap()
 					if(theirzone.bots > 2 || randomInt(100) < 45)
 					{
 						//kill carrier
-						if(carrier _hasPerk( "specialty_coldblooded" ))
+						if(carrier hasPerk( "specialty_gpsjammer" ))
 							continue;
 						
 						origin = carrier.origin;

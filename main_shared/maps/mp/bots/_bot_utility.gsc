@@ -363,6 +363,14 @@ isGased()
 }
 
 /*
+	If the player is the flag carrier
+*/
+isFlagCarrier()
+{
+	return (isDefined(self.isFlagCarrier) && self.isFlagCarrier);
+}
+
+/*
 	Returns a valid grenade launcher weapon
 */
 getValidTube()
