@@ -4062,7 +4062,7 @@ bot_war()
 
 		// check if should cap
 		if (game["war_momentum"][myTeam + "_multiplier"] == getDvarInt("twar_momentumMaxMultiplier") ||
-			flag.numTouching[otherTeam] > flag.numTouching[myTeam] ||
+			flag.useObj.numTouching[otherTeam] > flag.useObj.numTouching[myTeam] ||
 			rand > 90)
 		{
 			self.bot_lock_goal = true;
@@ -4161,7 +4161,7 @@ bots_go_around_twar(flag, myTeam, otherTeam)
 		if (game["war_momentum"][myTeam + "_multiplier"] == getDvarInt("twar_momentumMaxMultiplier"))
 			break;
 
-		if (flag.numTouching[otherTeam] > flag.numTouching[myTeam])
+		if (flag.useObj.numTouching[otherTeam] > flag.useObj.numTouching[myTeam])
 			break;
 	}
 	
