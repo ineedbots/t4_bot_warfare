@@ -947,6 +947,8 @@ start_bot_threads()
 		self thread bot_sd_attackers();
 
 		self thread bot_cap();
+
+		self thread bot_war();
 	}
 
 	self thread bot_revive_think();
@@ -4023,4 +4025,46 @@ bot_cap_get_flag(flag)
 	self.bot_lock_goal = false;
 	if (evt != "new_goal")
 		self ClearScriptGoal();
+}
+
+/*
+	Bots play the war gamemode
+*/
+bot_war()
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	level endon("game_ended");
+
+	if ( level.gametype != "twar" )
+		return;
+
+	myTeam = self.pers[ "team" ];
+	otherTeam = getOtherTeam( myTeam );
+
+	for ( ;; )
+	{
+		wait( randomintrange( 3, 5 ) );
+		
+		if ( self.bot_lock_goal )
+		{
+			continue;
+		}
+		
+		if(!isDefined(level.twarFlags))
+			continue;
+
+		flag = maps\mp\gametypes\twar::locate_contested_twar_flag();
+
+		if (!isDefined(flag))
+			continue;
+
+		// check if should cap
+		if (game["war_momentum"][self.team + "_multiplier"] == getDvarInt("twar_momentumMaxMultiplier"))
+		{
+		}
+		else
+		{
+		}
+	}
 }
