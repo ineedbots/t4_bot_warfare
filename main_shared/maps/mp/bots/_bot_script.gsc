@@ -4055,6 +4055,19 @@ bot_war()
 		if(!isDefined(level.twarFlags))
 			continue;
 
+		ourFlags = 0;
+		theirFlags = 0;
+		neuFlags = 0;
+		for (i = 0; i < level.flags.size; i++)
+		{
+			if ( level.flags[i] maps\mp\gametypes\twar::getFlagTeam() == myTeam )
+				ourFlags++;
+			else if (level.flags[i] maps\mp\gametypes\twar::getFlagTeam() == otherTeam)
+				theirFlags++;
+			else
+				neuFlags++;
+		}
+
 		flag = maps\mp\gametypes\twar::locate_contested_twar_flag();
 
 		if (!isDefined(flag))
@@ -4063,7 +4076,7 @@ bot_war()
 		// check if should cap
 		if (game["war_momentum"][myTeam + "_multiplier"] == getDvarInt("twar_momentumMaxMultiplier") ||
 			flag.useObj.numTouching[otherTeam] > flag.useObj.numTouching[myTeam] ||
-			rand > 90)
+			rand > 90 || ourFlags < theirFlags)
 		{
 			self.bot_lock_goal = true;
 			self SetScriptGoal(flag.origin, 1);
