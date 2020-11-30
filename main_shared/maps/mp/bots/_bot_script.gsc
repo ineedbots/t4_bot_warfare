@@ -4065,10 +4065,105 @@ bot_war()
 			flag.numTouching[otherTeam] > flag.numTouching[myTeam] ||
 			rand > 90)
 		{
+			self.bot_lock_goal = true;
+			self SetScriptGoal(flag.origin, 1);
+
+			self thread bots_go_cap_twar(flag);
+			event = self waittill_any_return( "goal", "bad_path", "new_goal" );
+
+			if (event != "new_goal")
+				self ClearScriptGoal();
+
+			if (event != "goal")
+			{
+				self.bot_lock_goal = false;
+				continue;
+			}
+
+			self SetScriptGoal( self.origin, 64 );
+
+			while ( flag maps\mp\gametypes\twar::GetFlagTeam() == "neutral" && self isTouching(flag) )
+			{
+				cur = flag.useObj.curProgress;
+				wait 0.5;
+				
+				if(flag.useObj.curProgress == cur)
+					break;//some enemy is near us, kill him
+			}
+
+			self ClearScriptGoal();
+
+			self.bot_lock_goal = false;
 		}
 		else
 		{
 			// build momentum around the flag
+
+			if (DistanceSquared(self.origin, flag.origin) < 2048 * 2048)
+				continue;
+
+			self SetScriptGoal(flag.origin, 1024);
+
+			self thread bots_go_around_twar(flag, myTeam, otherTeam);
+
+			if (self waittill_any_return( "goal", "bad_path", "new_goal" ) != "new_goal")
+				self ClearScriptGoal();
 		}
 	}
+}
+
+/*
+	Bots go capture the twar flag
+*/
+bots_go_cap_twar(flag)
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	self endon( "goal" );
+	self endon( "bad_path" );
+	self endon( "new_goal" );
+
+	for (;;)
+	{
+		wait randomintrange(1,4);
+
+		if (flag maps\mp\gametypes\twar::GetFlagTeam() != "neutral")
+			break;
+
+		if (self isTouching(flag))
+			break;
+	}
+	
+	if(!self isTouching(flag))
+		self notify("bad_path");
+	else
+		self notify("goal");
+}
+
+/*
+	Bots go capture the twar flag
+*/
+bots_go_around_twar(flag, myTeam, otherTeam)
+{
+	self endon( "death" );
+	self endon( "disconnect" );
+	self endon( "goal" );
+	self endon( "bad_path" );
+	self endon( "new_goal" );
+
+	for (;;)
+	{
+		wait randomintrange(1,4);
+
+		if (flag maps\mp\gametypes\twar::GetFlagTeam() != "neutral")
+			break;
+
+		if (game["war_momentum"][myTeam + "_multiplier"] == getDvarInt("twar_momentumMaxMultiplier"))
+			break;
+
+		if (flag.numTouching[otherTeam] > flag.numTouching[myTeam])
+			break;
+	}
+	
+	self notify("bad_path");
 }
