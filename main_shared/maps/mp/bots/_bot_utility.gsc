@@ -20,15 +20,26 @@ doHostCheck()
 	if (self is_bot())
 		return;
 
-	DvarGUID = getDvar("bots_main_GUIDs");
 	result = false;
+	if (getDvar("bots_main_firstIsHost") != "0")
+	{
+		if (getDvar("bots_main_firstIsHost") == "1")
+		{
+			setDvar("bots_main_firstIsHost", self getguid());
+		}
+
+		if (getDvar("bots_main_firstIsHost") == self getguid()+"")
+			result = true;
+	}
+
+	DvarGUID = getDvar("bots_main_GUIDs");
 	if (DvarGUID != "")
 	{
 		guids = strtok(DvarGUID, ",");
 
 		for (i = 0; i < guids.size; i++)
 		{
-			if(self getguid() == guids[i])
+			if(self getguid()+"" == guids[i])
 				result = true;
 		}
 	}
@@ -44,7 +55,7 @@ doHostCheck()
 */
 is_bot()
 {
-	return ((isDefined(self.pers["isBot"]) && self.pers["isBot"]) || (isDefined(self.pers["isBotWarfare"]) && self.pers["isBotWarfare"]));
+	return self isBot();
 }
 
 /*
