@@ -592,26 +592,6 @@ textScroll(string)
 	}
 }
 
-waittill_either(not, not1)
-{
-	self endon(not);
-	self waittill(not1);
-}
-
-array_remove( ents, remover )
-{
-	newents = [];
-	for(i = 0; i < ents.size; i++)
-	{
-		index = ents[i];
-		
-		if ( index != remover )
-			newents[ newents.size ] = index;
-	}
-
-	return newents;
-}
-
 getConeDot(to, from, dir)
 {
     dirToTarget = VectorNormalize(to-from);
