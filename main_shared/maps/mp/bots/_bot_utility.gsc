@@ -162,7 +162,7 @@ IsBotKnifing()
 */
 IsPlayerModelOK()
 {
-	return (isDefined(self.bot_model_fix));
+	return (isDefined(self.bot_model_fix) && !isDefined(self.gib_ref));
 }
 
 /*

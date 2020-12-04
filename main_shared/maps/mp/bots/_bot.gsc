@@ -255,6 +255,7 @@ onPlayerConnect()
 		player thread onGrenadeFire();
 		player thread onWeaponFired();
 		player thread doPlayerModelFix();
+		player thread onPlayerSpawned();
 		
 		player thread connected();
 	}
@@ -661,6 +662,19 @@ addBots()
 			if (isDefined(tempBot))
 				tempBot RemoveTestClient();
 		}
+	}
+}
+
+/*
+	When any player spawns
+*/
+onPlayerSpawned()
+{
+	self endon("disconnect");
+	for(;;)
+	{
+		self waittill ( "spawned_player" );
+		self.gib_ref = undefined;
 	}
 }
 
