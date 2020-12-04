@@ -1,3 +1,10 @@
+/*
+	_wp_editor
+	Author: INeedGames
+	Date: 09/26/2020
+	The ingame waypoint editor. Designed to be ran on the client (not the server)
+*/
+
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\gametypes\_hud_util;
@@ -8,48 +15,48 @@ init()
 		setDvar("bots_main_debug", 0);
 
 	if(!getDVarint("bots_main_debug"))
-    return;
+		return;
 
-  if(!getDVarint("developer"))
-  {
-    setdvar("developer_script", 1);
-    setdvar("developer", 1);
-    
-    setdvar("sv_mapRotation", "map "+getDvar("mapname"));
-    exitLevel(false);
-  }
+	if(!getDVarint("developer"))
+	{
+		setdvar("developer_script", 1);
+		setdvar("developer", 1);
+
+		setdvar("sv_mapRotation", "map "+getDvar("mapname"));
+		exitLevel(false);
+	}
 
 	setDvar("bots_main", 0);
 	setdvar("bots_main_menu", 0);
-  setdvar("bots_manage_fill_mode", 0);
-  setdvar("bots_manage_fill", 0);
-  setdvar("bots_manage_add", 0);
-  setdvar("bots_manage_fill_kick", 1);
+	setdvar("bots_manage_fill_mode", 0);
+	setdvar("bots_manage_fill", 0);
+	setdvar("bots_manage_add", 0);
+	setdvar("bots_manage_fill_kick", 1);
 	setDvar("bots_manage_fill_spec", 1);
-  
-  if (getDvar("bots_main_debug_distance") == "")
-    setDvar("bots_main_debug_distance", 512.0);
 
-  if (getDvar("bots_main_debug_cone") == "")
-    setDvar("bots_main_debug_cone", 0.65);
+	if (getDvar("bots_main_debug_distance") == "")
+		setDvar("bots_main_debug_distance", 512.0);
 
-  if (getDvar("bots_main_debug_minDist") == "")
-    setDvar("bots_main_debug_minDist", 32.0);
+	if (getDvar("bots_main_debug_cone") == "")
+		setDvar("bots_main_debug_cone", 0.65);
 
-  if (getDvar("bots_main_debug_drawThrough") == "")
-    setDvar("bots_main_debug_drawThrough", false);
+	if (getDvar("bots_main_debug_minDist") == "")
+		setDvar("bots_main_debug_minDist", 32.0);
 
-  if(getDvar("bots_main_debug_commandWait") == "")
+	if (getDvar("bots_main_debug_drawThrough") == "")
+		setDvar("bots_main_debug_drawThrough", false);
+
+	if(getDvar("bots_main_debug_commandWait") == "")
 		setDvar("bots_main_debug_commandWait", 0.5);
 
 	setDvar("player_sustainAmmo", 1);
 
-  level.waypoints = [];
+	level.waypoints = [];
 	level.waypointCount = 0;
-  
-  level waittill( "connected", player);
-  
-  player thread onPlayerSpawned();
+
+	level waittill( "connected", player);
+
+	player thread onPlayerSpawned();
 }
 
 onPlayerSpawned()
@@ -75,8 +82,8 @@ beginDebug()
 	self clearPerks();
 	self takeAllWeapons();
 	self.specialty = [];
-	self giveWeapon("m16_gl_mp");
-  self SetActionSlot( 3, "altMode" );
+	self giveWeapon("m1garand_gl_mp");
+	self SetActionSlot( 3, "altMode" );
 	self giveWeapon("frag_grenade_mp");
 	self freezecontrols(false);
 	
@@ -112,14 +119,14 @@ debug()
 		
 		closest = -1;
 		myEye = self getTagOrigin( "j_head" );
-    myAngles = self GetPlayerAngles();
+		myAngles = self GetPlayerAngles();
 		
 		for(i = 0; i < level.waypointCount; i++)
 		{
 			if(closest == -1 || closer(self.origin, level.waypoints[i].origin, level.waypoints[closest].origin))
 				closest = i;
 
-      wpOrg = level.waypoints[i].origin + (0, 0, 25);
+			wpOrg = level.waypoints[i].origin + (0, 0, 25);
 			
 			if(distance(level.waypoints[i].origin, self.origin) < getDvarFloat("bots_main_debug_distance") && (bulletTracePassed(myEye, wpOrg, false, self) || getDVarint("bots_main_debug_drawThrough")))
 			{
@@ -129,7 +136,7 @@ debug()
 				if(getConeDot(wpOrg, myEye, myAngles) > getDvarFloat("bots_main_debug_cone"))
 					print3d(wpOrg, i, (1,0,0), 2);
 
-        if (isDefined(level.waypoints[i].angles) && level.waypoints[i].type != "stand")
+				if (isDefined(level.waypoints[i].angles) && level.waypoints[i].type != "stand")
 					line(wpOrg, wpOrg + AnglesToForward(level.waypoints[i].angles) * 64, (1,1,1));
 			}
 		}
@@ -277,32 +284,34 @@ watchSaveWaypointsCommand()
 			}
 			logprint("*/return waypoints;\n}\n\n\n\n");
 
-      PrintLn(level.waypointCount);
-      for(i = 0; i < level.waypointCount; i++)
-      {
-        str = "";
-        wp = level.waypoints[i];
+			PrintLn("********* Start Bot Warfare WPDump *********");
+			PrintLn(level.waypointCount);
+			for(i = 0; i < level.waypointCount; i++)
+			{
+				str = "";
+				wp = level.waypoints[i];
 
-        str += wp.origin[0] + " " + wp.origin[1] + " " + wp.origin[2] + ",";
+				str += wp.origin[0] + " " + wp.origin[1] + " " + wp.origin[2] + ",";
 
-        for(h = 0; h < wp.childCount; h++)
-        {
-          str += wp.children[h];
+				for(h = 0; h < wp.childCount; h++)
+				{
+					str += wp.children[h];
 
-          if (h < wp.childCount - 1)
-            str += " ";
-        }
-        str += "," + wp.type + ",";
+					if (h < wp.childCount - 1)
+						str += " ";
+				}
+				str += "," + wp.type + ",";
 
-        if (isDefined(wp.angles))
-          str += wp.angles[0] + " " + wp.angles[1] + " " + wp.angles[2] + ",";
-        else
-          str += ",";
+				if (isDefined(wp.angles))
+					str += wp.angles[0] + " " + wp.angles[1] + " " + wp.angles[2] + ",";
+				else
+					str += ",";
 
-        str += ",";
+				str += ",";
 
-        PrintLn(str);
-      }
+				PrintLn(str);
+			}
+			PrintLn("\n\n\n\n\n\n");
 
 			self iprintln("Saved!!!");
 		}
@@ -312,13 +321,13 @@ watchSaveWaypointsCommand()
 			{
 				self iPrintlnBold("Auto link disabled");
 				level.autoLink = false;
-        level.wpToLink = -1;
+				level.wpToLink = -1;
 			}
 			else
 			{
 				self iPrintlnBold("Auto link enabled");
 				level.autoLink = true;
-        level.wpToLink = self.nearest;
+				level.wpToLink = self.nearest;
 			}
 		}
 		
@@ -567,20 +576,20 @@ textScroll(string)
 	self endon("disconnect");
 	//thanks ActionScript
 	
-  back = createBar((0,0,0), 1000, 30);
-  back setPoint("CENTER", undefined, 0, 220);
+	back = createBar((0,0,0), 1000, 30);
+	back setPoint("CENTER", undefined, 0, 220);
 	self thread destroyOnDeath(back);
-	
-  text = createFontString("default", 1.5);
-  text setText(string);
+
+	text = createFontString("default", 1.5);
+	text setText(string);
 	self thread destroyOnDeath(text);
-	
-  for (;;)
-  {
-    text setPoint("CENTER", undefined, 1200, 220);
-    text setPoint("CENTER", undefined, -1200, 220, 20);
-    wait 20;
-  }
+
+	for (;;)
+	{
+		text setPoint("CENTER", undefined, 1200, 220);
+		text setPoint("CENTER", undefined, -1200, 220, 20);
+		wait 20;
+	}
 }
 
 waittill_either(not, not1)
@@ -614,48 +623,52 @@ getMapName(map)
 {
 	switch(map)
 	{
-		case "mp_convoy":
-			return "Ambush";
-		case "mp_backlot":
-			return "Backlot";
-		case "mp_bloc":
-			return "Bloc";
-		case "mp_bog":
-			return "Bog";
-		case "mp_countdown":
-			return "Countdown";
-		case "mp_crash":
-			return "Crash";
-		case "mp_crash_snow":
-			return "Winter Crash";
-		case "mp_crossfire":
-			return "Crossfire";
-		case "mp_citystreets":
-			return "District";
-		case "mp_farm":
-			return "Downpour";
-		case "mp_overgrown":
-			return "Overgrown";
-		case "mp_pipeline":
-			return "Pipeline";
-		case "mp_shipment":
-			return "Shipment";
-		case "mp_showdown":
-			return "Showdown";
-		case "mp_strike":
-			return "Strike";
-		case "mp_vacant":
-			return "Vacant";
-		case "mp_cargoship":
-			return "Wetwork";
-		case "mp_broadcast":
-			return "Broadcast";
-		case "mp_creek":
-			return "Creek";
-		case "mp_carentan":
-			return "Chinatown";
-		case "mp_killhouse":
-			return "Killhouse";
+		case "mp_airfield":
+			return "Airfield";
+		case "mp_asylum":
+			return "Asylum";
+		case "mp_kwai":
+			return "Banzai";
+		case "mp_drum":
+			return "Battery";
+		case "mp_castle":
+			return "Castle";
+		case "mp_shrine":
+			return "Cliffside";
+		case "mp_stalingrad":
+			return "Corrosion";
+		case "mp_courtyard":
+			return "Courtyard";
+		case "mp_dome":
+			return "Dome";
+		case "mp_downfall":
+			return "Downfall";
+		case "mp_hangar":
+			return "Hangar";
+		case "mp_kneedeep":
+			return "Knee Deep";
+		case "mp_makin":
+			return "Makin";
+		case "mp_makin_day":
+			return "Makin Day";
+		case "mp_nachtfeuer":
+			return "Nightfire";
+		case "mp_outskirts":
+			return "Outskirts";
+		case "mp_vodka":
+			return "Revolution";
+		case "mp_roundhouse":
+			return "Roundhouse";
+		case "mp_seelow":
+			return "Seelow";
+		case "mp_subway":
+			return "Station";
+		case "mp_docks":
+			return "Sub Pens";
+		case "mp_suburban":
+			return "Upheaval";
+		case "mp_bgate":
+			return "Breach";
 	}
 	
 	return map;
@@ -670,67 +683,72 @@ load_waypoints()
 	
 	switch(mapname)
 	{
-		case "mp_convoy":
-			level.waypoints = maps\mp\bots\waypoints\ambush::Ambush();
+		case "mp_airfield":
+			level.waypoints = maps\mp\bots\waypoints\airfield::Airfield();
 		break;
-		case "mp_backlot":
-			level.waypoints = maps\mp\bots\waypoints\backlot::Backlot();
+		case "mp_asylum":
+			level.waypoints = maps\mp\bots\waypoints\asylum::Asylum();
 		break;
-		case "mp_bloc":
-			level.waypoints = maps\mp\bots\waypoints\bloc::Bloc();
+		case "mp_kwai":
+			level.waypoints = maps\mp\bots\waypoints\banzai::Banzai();
 		break;
-		case "mp_bog":
-			level.waypoints = maps\mp\bots\waypoints\bog::Bog();
+		case "mp_drum":
+			level.waypoints = maps\mp\bots\waypoints\battery::Battery();
 		break;
-		case "mp_countdown":
-			level.waypoints = maps\mp\bots\waypoints\countdown::Countdown();
+		case "mp_bgate":
+			level.waypoints = maps\mp\bots\waypoints\breach::Breach();
 		break;
-		case "mp_crash":
-		case "mp_crash_snow":
-			level.waypoints = maps\mp\bots\waypoints\crash::Crash();
+		case "mp_castle":
+			level.waypoints = maps\mp\bots\waypoints\castle::Castle();
 		break;
-		case "mp_crossfire":
-			level.waypoints = maps\mp\bots\waypoints\crossfire::Crossfire();
+		case "mp_shrine":
+			level.waypoints = maps\mp\bots\waypoints\cliffside::Cliffside();
 		break;
-		case "mp_citystreets":
-			level.waypoints = maps\mp\bots\waypoints\district::District();
+		case "mp_stalingrad":
+			level.waypoints = maps\mp\bots\waypoints\corrosion::Corrosion();
 		break;
-		case "mp_farm":
-			level.waypoints = maps\mp\bots\waypoints\downpour::Downpour();
+		case "mp_courtyard":
+			level.waypoints = maps\mp\bots\waypoints\courtyard::Courtyard();
 		break;
-		case "mp_overgrown":
-			level.waypoints = maps\mp\bots\waypoints\overgrown::Overgrown();
+		case "mp_dome":
+			level.waypoints = maps\mp\bots\waypoints\dome::Dome();
 		break;
-		case "mp_pipeline":
-			level.waypoints = maps\mp\bots\waypoints\pipeline::Pipeline();
+		case "mp_downfall":
+			level.waypoints = maps\mp\bots\waypoints\downfall::Downfall();
 		break;
-		case "mp_shipment":
-			level.waypoints = maps\mp\bots\waypoints\shipment::Shipment();
+		case "mp_hangar":
+			level.waypoints = maps\mp\bots\waypoints\hangar::Hangar();
 		break;
-		case "mp_showdown":
-			level.waypoints = maps\mp\bots\waypoints\showdown::Showdown();
+		case "mp_kneedeep":
+			level.waypoints = maps\mp\bots\waypoints\kneedeep::KneeDeep();
 		break;
-		case "mp_strike":
-			level.waypoints = maps\mp\bots\waypoints\strike::Strike();
+		case "mp_makin":
+		case "mp_makin_day":
+			level.waypoints = maps\mp\bots\waypoints\makin::Makin();
 		break;
-		case "mp_vacant":
-			level.waypoints = maps\mp\bots\waypoints\vacant::Vacant();
+		case "mp_nachtfeuer":
+			level.waypoints = maps\mp\bots\waypoints\nightfire::Nightfire();
 		break;
-		case "mp_cargoship":
-			level.waypoints = maps\mp\bots\waypoints\wetwork::Wetwork();
+		case "mp_outskirts":
+			level.waypoints = maps\mp\bots\waypoints\outskirts::Outskirts();
 		break;
-		
-		case "mp_broadcast":
-			level.waypoints = maps\mp\bots\waypoints\broadcast::Broadcast();
+		case "mp_vodka":
+			level.waypoints = maps\mp\bots\waypoints\revolution::Revolution();
 		break;
-		case "mp_creek":
-			level.waypoints = maps\mp\bots\waypoints\creek::Creek();
+		case "mp_roundhouse":
+			level.waypoints = maps\mp\bots\waypoints\roundhouse::Roundhouse();
 		break;
-		case "mp_carentan":
-			level.waypoints = maps\mp\bots\waypoints\chinatown::Chinatown();
+		case "mp_seelow":
+			level.waypoints = maps\mp\bots\waypoints\seelow::Seelow();
 		break;
-		case "mp_killhouse":
-			level.waypoints = maps\mp\bots\waypoints\killhouse::Killhouse();
+		case "mp_subway":
+			level.waypoints = maps\mp\bots\waypoints\station::Station();
+		break;
+		case "mp_docks":
+			level.waypoints = maps\mp\bots\waypoints\subpens::SubPens();
+		break;
+		case "mp_suburban":
+			level.waypoints = maps\mp\bots\waypoints\upheaval::Upheaval();
 		break;
 		
 		default:
