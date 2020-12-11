@@ -1,4 +1,4 @@
-![GitHub Logo](/userraw/bw-assets/bw-logo.png)
+![GitHub Logo](/main_shared/bw-assets/bw-logo.png)
 
 # T4M Bot Warfare
 Bot Warfare is a GSC mod for the [T4M project](https://github.com/ineedbots/T4M).
