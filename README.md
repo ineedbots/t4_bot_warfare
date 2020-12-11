@@ -117,9 +117,9 @@ Pressing the menu button again closes menus.
 
 ---
 
-- bots_loadout_reasonable - a boolean value (0 or 1), whether or not if the bots should filter out bad create a class selections (like no miniuzi bling with acog rapidfire and hardline for example)
+- bots_loadout_reasonable - a boolean value (0 or 1), whether or not if the bots should filter out bad create a class selections
 
-- bots_loadout_allow_op - a boolean value (0 or 1), whether or not if the bots are allowed to use deathstreaks, noobtubes, rpg, laststand, etc.
+- bots_loadout_allow_op - a boolean value (0 or 1), whether or not if the bots are allowed to use jug, marty, etc.
 
 - bots_play_move - a boolean value (0 or 1), whether or not if the bots will move
 - bots_play_knife - a boolean value (0 or 1), whether or not if the bots will use the knife
