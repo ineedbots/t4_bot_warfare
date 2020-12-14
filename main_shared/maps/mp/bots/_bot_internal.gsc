@@ -233,6 +233,7 @@ doBotMovement()
 
 		// move!
 		self botMovement(int(dir[0]), int(dir[1]));
+		self setPing(randomIntRange(45, 55));
 	}
 }
 
