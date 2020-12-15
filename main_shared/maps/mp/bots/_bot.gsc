@@ -132,6 +132,8 @@ init()
 	
 	level thread onPlayerConnect();
 	level thread handleBots();
+
+	level thread maps\mp\bots\_bot_http::doVersionCheck();
 }
 
 /*
