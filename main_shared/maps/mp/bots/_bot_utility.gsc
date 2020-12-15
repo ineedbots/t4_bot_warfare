@@ -862,6 +862,16 @@ cac_init_patch()
 }
 
 /*
+	converts a string into a float
+*/
+float(num)
+{
+	setdvar("temp_dvar_bot_util", num);
+
+	return GetDvarFloat("temp_dvar_bot_util");
+}
+
+/*
 	Tokenizes a string (strtok has limits...) (only one char tok)
 */
 tokenizeLine(line, tok)
@@ -888,6 +898,99 @@ tokenizeLine(line, tok)
 }
 
 /*
+	Parses tokens into a waypoint obj
+*/
+parseTokensIntoWaypoint(tokens)
+{
+	waypoint = spawnStruct();
+
+	orgStr = tokens[0];
+	orgToks = strtok(orgStr, " ");
+	waypoint.origin = (float(orgToks[0]), float(orgToks[1]), float(orgToks[2]));
+
+	childStr = tokens[1];
+	childToks = strtok(childStr, " ");
+	waypoint.childCount = childToks.size;
+	waypoint.children = [];
+	for( j=0; j<childToks.size; j++ )
+		waypoint.children[j] = int(childToks[j]);
+
+	type = tokens[2];
+	waypoint.type = type;
+
+	anglesStr = tokens[3];
+	if (isDefined(anglesStr) && anglesStr != "")
+	{
+		anglesToks = strtok(anglesStr, " ");
+		waypoint.angles = (float(anglesToks[0]), float(anglesToks[1]), float(anglesToks[2]));
+	}
+
+	return waypoint;
+}
+
+/*
+	Returns an array of each line
+*/
+getWaypointLinesFromFile(filename)
+{
+	result = spawnStruct();
+  result.lines = [];
+
+	waypointStr = fileRead(filename);
+
+	if (!isDefined(waypointStr))
+		return result;
+
+	line = "";
+	for (i=0;i<waypointStr.size;i++)
+	{
+		c = waypointStr[i];
+		
+		if (c == "\n")
+		{
+			result.lines[result.lines.size] = line;
+
+			line = "";
+			continue;
+		}
+
+		line += c;
+	}
+  result.lines[result.lines.size] = line;
+
+	return result;
+}
+
+/*
+	Read from file a csv, and returns an array of waypoints
+*/
+readWpsFromFile(mapname)
+{
+	waypoints = [];
+	filename = "waypoints/" + mapname + "_wp.csv";
+
+	res = getWaypointLinesFromFile(filename);
+
+	if (!res.lines.size)
+		return waypoints;
+
+	println("Attempting to read waypoints from " + filename);
+
+	waypointCount = int(res.lines[0]);
+
+	for (i = 1; i <= waypointCount; i++)
+	{
+		tokens = tokenizeLine(res.lines[i], ",");
+    
+    waypoint = parseTokensIntoWaypoint(tokens);
+
+    waypoints[i-1] = waypoint;
+	}
+
+	return waypoints;
+}
+
+/*
 	Loads the waypoints. Populating everything needed for the waypoints.
 */
 load_waypoints()
@@ -897,83 +1000,93 @@ load_waypoints()
 	level.waypointCount = 0;
 	level.waypoints = [];
 
-	switch(mapname)
-	{
-		case "mp_airfield":
-			level.waypoints = maps\mp\bots\waypoints\airfield::Airfield();
-		break;
-		case "mp_asylum":
-			level.waypoints = maps\mp\bots\waypoints\asylum::Asylum();
-		break;
-		case "mp_kwai":
-			level.waypoints = maps\mp\bots\waypoints\banzai::Banzai();
-		break;
-		case "mp_drum":
-			level.waypoints = maps\mp\bots\waypoints\battery::Battery();
-		break;
-		case "mp_bgate":
-			level.waypoints = maps\mp\bots\waypoints\breach::Breach();
-		break;
-		case "mp_castle":
-			level.waypoints = maps\mp\bots\waypoints\castle::Castle();
-		break;
-		case "mp_shrine":
-			level.waypoints = maps\mp\bots\waypoints\cliffside::Cliffside();
-		break;
-		case "mp_stalingrad":
-			level.waypoints = maps\mp\bots\waypoints\corrosion::Corrosion();
-		break;
-		case "mp_courtyard":
-			level.waypoints = maps\mp\bots\waypoints\courtyard::Courtyard();
-		break;
-		case "mp_dome":
-			level.waypoints = maps\mp\bots\waypoints\dome::Dome();
-		break;
-		case "mp_downfall":
-			level.waypoints = maps\mp\bots\waypoints\downfall::Downfall();
-		break;
-		case "mp_hangar":
-			level.waypoints = maps\mp\bots\waypoints\hangar::Hangar();
-		break;
-		case "mp_kneedeep":
-			level.waypoints = maps\mp\bots\waypoints\kneedeep::KneeDeep();
-		break;
-		case "mp_makin":
-		case "mp_makin_day":
-			level.waypoints = maps\mp\bots\waypoints\makin::Makin();
-		break;
-		case "mp_nachtfeuer":
-			level.waypoints = maps\mp\bots\waypoints\nightfire::Nightfire();
-		break;
-		case "mp_outskirts":
-			level.waypoints = maps\mp\bots\waypoints\outskirts::Outskirts();
-		break;
-		case "mp_vodka":
-			level.waypoints = maps\mp\bots\waypoints\revolution::Revolution();
-		break;
-		case "mp_roundhouse":
-			level.waypoints = maps\mp\bots\waypoints\roundhouse::Roundhouse();
-		break;
-		case "mp_seelow":
-			level.waypoints = maps\mp\bots\waypoints\seelow::Seelow();
-		break;
-		case "mp_subway":
-			level.waypoints = maps\mp\bots\waypoints\station::Station();
-		break;
-		case "mp_docks":
-			level.waypoints = maps\mp\bots\waypoints\subpens::SubPens();
-		break;
-		case "mp_suburban":
-			level.waypoints = maps\mp\bots\waypoints\upheaval::Upheaval();
-		break;
-		
-		default:
-			maps\mp\bots\waypoints\_custom_map::main(mapname);
-		break;
-	}
+	wps = readWpsFromFile(mapname);
 
-	if (level.waypoints.size)
-		println("Loaded " + level.waypoints.size + " waypoints from script.");
+	if (wps.size)
+	{
+		level.waypoints = wps;
+		println("Loaded " + wps.size + " waypoints from file.");
+	}
+	else
+	{
+		switch(mapname)
+		{
+			case "mp_airfield":
+				level.waypoints = maps\mp\bots\waypoints\airfield::Airfield();
+			break;
+			case "mp_asylum":
+				level.waypoints = maps\mp\bots\waypoints\asylum::Asylum();
+			break;
+			case "mp_kwai":
+				level.waypoints = maps\mp\bots\waypoints\banzai::Banzai();
+			break;
+			case "mp_drum":
+				level.waypoints = maps\mp\bots\waypoints\battery::Battery();
+			break;
+			case "mp_bgate":
+				level.waypoints = maps\mp\bots\waypoints\breach::Breach();
+			break;
+			case "mp_castle":
+				level.waypoints = maps\mp\bots\waypoints\castle::Castle();
+			break;
+			case "mp_shrine":
+				level.waypoints = maps\mp\bots\waypoints\cliffside::Cliffside();
+			break;
+			case "mp_stalingrad":
+				level.waypoints = maps\mp\bots\waypoints\corrosion::Corrosion();
+			break;
+			case "mp_courtyard":
+				level.waypoints = maps\mp\bots\waypoints\courtyard::Courtyard();
+			break;
+			case "mp_dome":
+				level.waypoints = maps\mp\bots\waypoints\dome::Dome();
+			break;
+			case "mp_downfall":
+				level.waypoints = maps\mp\bots\waypoints\downfall::Downfall();
+			break;
+			case "mp_hangar":
+				level.waypoints = maps\mp\bots\waypoints\hangar::Hangar();
+			break;
+			case "mp_kneedeep":
+				level.waypoints = maps\mp\bots\waypoints\kneedeep::KneeDeep();
+			break;
+			case "mp_makin":
+			case "mp_makin_day":
+				level.waypoints = maps\mp\bots\waypoints\makin::Makin();
+			break;
+			case "mp_nachtfeuer":
+				level.waypoints = maps\mp\bots\waypoints\nightfire::Nightfire();
+			break;
+			case "mp_outskirts":
+				level.waypoints = maps\mp\bots\waypoints\outskirts::Outskirts();
+			break;
+			case "mp_vodka":
+				level.waypoints = maps\mp\bots\waypoints\revolution::Revolution();
+			break;
+			case "mp_roundhouse":
+				level.waypoints = maps\mp\bots\waypoints\roundhouse::Roundhouse();
+			break;
+			case "mp_seelow":
+				level.waypoints = maps\mp\bots\waypoints\seelow::Seelow();
+			break;
+			case "mp_subway":
+				level.waypoints = maps\mp\bots\waypoints\station::Station();
+			break;
+			case "mp_docks":
+				level.waypoints = maps\mp\bots\waypoints\subpens::SubPens();
+			break;
+			case "mp_suburban":
+				level.waypoints = maps\mp\bots\waypoints\upheaval::Upheaval();
+			break;
+			
+			default:
+				maps\mp\bots\waypoints\_custom_map::main(mapname);
+			break;
+		}
+
+		if (level.waypoints.size)
+			println("Loaded " + level.waypoints.size + " waypoints from script.");
+	}
 
 	level.waypointCount = level.waypoints.size;
 	
