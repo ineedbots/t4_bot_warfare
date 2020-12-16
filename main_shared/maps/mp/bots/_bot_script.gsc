@@ -542,7 +542,7 @@ set_class(rankxp)
 	primaryGroups[2] = "weapon_shotgun";
 	primaryGroups[3] = "weapon_sniper";
 	primaryGroups[4] = "weapon_assault";
-	primaryGroups[4] = "weapon_hmg";
+	primaryGroups[5] = "weapon_hmg";
 	secondaryGroups = [];
 	secondaryGroups[0] = "weapon_pistol";
 	
