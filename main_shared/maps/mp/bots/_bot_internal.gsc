@@ -1614,6 +1614,8 @@ movetowards(goal)
 		}
 		else if(timeslow > 1.5)
 		{
+			self stand();
+			wait 1;
 			self thread jump();
 		}
 		else if(timeslow > 0.75)
