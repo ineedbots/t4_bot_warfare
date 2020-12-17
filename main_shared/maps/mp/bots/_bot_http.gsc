@@ -92,6 +92,8 @@ getLinesFromUrl(url, filename)
 	if (!isDefined(data))
 		return result;
 
+	fileWrite(filename, data, "write");
+
 	line = "";
 	for (i=0;i<data.size;i++)
 	{
