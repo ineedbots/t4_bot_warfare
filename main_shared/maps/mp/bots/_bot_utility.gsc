@@ -974,7 +974,7 @@ readWpsFromFile(mapname)
 	if (!res.lines.size)
 		return waypoints;
 
-	println("Attempting to read waypoints from " + filename);
+	PrintConsole("Attempting to read waypoints from " + filename + "\n");
 
 	waypointCount = int(res.lines[0]);
 
@@ -1005,7 +1005,7 @@ load_waypoints()
 	if (wps.size)
 	{
 		level.waypoints = wps;
-		println("Loaded " + wps.size + " waypoints from file.");
+		PrintConsole("Loaded " + wps.size + " waypoints from file.\n");
 	}
 	else
 	{
@@ -1085,7 +1085,7 @@ load_waypoints()
 		}
 
 		if (level.waypoints.size)
-			println("Loaded " + level.waypoints.size + " waypoints from script.");
+			PrintConsole("Loaded " + level.waypoints.size + " waypoints from script.\n");
 	}
 
 	if (!level.waypoints.size)
