@@ -574,6 +574,8 @@ teamBots()
 addBots()
 {
 	level endon("game_ended");
+
+	bot_wait_for_host();
 	
 	for(;;)
 	{
