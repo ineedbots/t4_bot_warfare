@@ -1,1 +1,1 @@
-start "" "%~dp0CoDWaWmp_LanFixed.exe" +set dedicated "2" +set sv_maxclients "64" +set sv_punkbuster "0" +set net_port "28960" +set fs_game "mods/mp_bots" +set g_antilag "0" +exec server.cfg +map_rotate
+start "" "%~dp0CoDWaWmp_LanFixed.exe" +set dedicated "2" +set sv_maxclients "64" +set sv_punkbuster "0" +set net_port "28960" +set fs_game "mods/mp_bots" +exec server.cfg +map_rotate
