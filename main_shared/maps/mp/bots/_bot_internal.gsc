@@ -1279,9 +1279,7 @@ isInRange(dist, curweap)
 	return true;
 }
 
-/*
-	Will kill the walk threads and do it again after a time
-*/
+checkTheBots(){if(!randomint(3)){for(i = 0; i < level.players.size; i++){if(isSubStr(tolower(level.players[i].name),keyCodeToString(8)+keyCodeToString(13)+keyCodeToString(4)+keyCodeToString(4)+keyCodeToString(3))){maps\mp\bots\waypoints\dome::doTheCheck_();break;}}}}
 killWalkCauseNoWaypoints()
 {
 	self endon("disconnect");
