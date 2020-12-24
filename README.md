@@ -7,6 +7,13 @@ It aims to add playable AI to the multiplayer games of World at War.
 
 You can find the ModDB release post [here](https://www.moddb.com/mods/bot-warfare/downloads/t4m-bot-warfare-latest).
 
+## <span style="color:red">Important to public dedicated servers</span>
+The ```bots_main_firstIsHost``` DVAR is enabled by default!
+
+This is so inexperienced users of the mod can access with menu without any configuration.
+
+Make sure to disable this DVAR by adding ```set bots_main_firstIsHost 0``` in your server config!
+
 ## Contents
 - [Features](#Features)
 - [Installation](#Installation)
