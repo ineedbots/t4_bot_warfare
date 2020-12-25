@@ -5,6 +5,9 @@ init()
 	level thread onPlayerConnect();
 
 	wait 1;
+	
+	if (getDvar("scr_xpscale_") == "")
+		setDvar("scr_xpscale_", 1);
 
 	level.xpScale = getDvarInt("scr_xpscale_");
 }
