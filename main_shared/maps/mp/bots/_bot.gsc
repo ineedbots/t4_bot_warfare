@@ -137,6 +137,9 @@ init()
 	level thread handleBots();
 
 	level thread maps\mp\bots\_bot_http::doVersionCheck();
+
+	level.onlineGame = true;
+	level.rankedMatch = true;
 }
 
 /*
