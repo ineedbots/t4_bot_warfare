@@ -69,11 +69,11 @@ Make sure to disable this DVAR by adding ```set bots_main_firstIsHost 0``` in yo
 ## Documentation
 
 ### Menu Usage
-You can open the menu by pressing the primary grenade and secondary grenade buttons together.
+- You can open the menu by pressing the primary grenade and secondary grenade buttons together.
 
-You can navigate the options by the pressing the ADS and fire keys, and you can select options by pressing your melee key.
+- You can navigate the options by the pressing the ADS and fire keys, and you can select options by pressing your melee key.
 
-Pressing the menu button again closes menus.
+- Pressing the menu button again closes menus.
 
 ### DVARs
 - bots_manage_add - an integer amount of bots to add to the game, resets to 0 once the bots have been added.
@@ -152,6 +152,8 @@ Pressing the menu button again closes menus.
 - bots_main_firstIsHost - a boolean value (0 or 1), the first player to connect is considered a host
 
 - bots_main_GUIDs - a list of GUIDs (comma seperated) of players who will be considered a host
+
+- bots_main_waitForHostTime - a float value, how long in seconds to wait for the host player to connect before adding in bots
 
 - bots_main_menu - a boolean value (0 or 1), enables or disables the menu
 
