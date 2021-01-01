@@ -11,6 +11,9 @@
 !/z_serverdev.bat
 !/z_bots.bat
 !/README.md
+!/out
+
+*.zip
 
 !/main/
 !/main_shared/
