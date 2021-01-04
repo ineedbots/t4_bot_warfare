@@ -14,11 +14,13 @@ Make sure to disable this DVAR by adding 'set bots_main_firstIsHost 0' in your s
 T4M requires an unpacked steamless version of the multiplayer World at War executable (otherwise known as LanFixed). You can use a Steam Unpacker on your multiplayer World at War Steam executable to acquire the required executable.
 
 0. Make sure that T4M is installed, updated and working properly.
+  - Download the d3d9.dll from https://github.com/ineedbots/T4M/releases and place it into the root of your World at War install
+  - Download the WaW MP LanFixed from https://bit.ly/3803IUC and place it into the root of your World at War install, you will use this executable to run the game.
 1. Extract all the files from the Bot Warfare release archive you downloaded to anywhere on your computer.
 2. Run the 'install.bat'. This copies the mod to your WaW mods folder.
 3. The mod is now installed, now run your game.
-    - If you are a dedicated server, you will need to set the DVAR 'fs_game' to 'mods/mp_bots'
-    - If you are not a dedicated server, open the 'Mods' option from the main menu of the game and select 'mp_bots' and then 'Launch'.
+  - If you are a dedicated server, you will need to set the DVAR 'fs_game' to 'mods/mp_bots'
+  - If you are not a dedicated server, open the 'Mods' option from the main menu of the game and select 'mp_bots' and then 'Launch'.
 4. The mod should be loaded! Now go start a map and play!
 
 ## Menu Usage
