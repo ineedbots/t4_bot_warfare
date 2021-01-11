@@ -1556,6 +1556,12 @@ bot_revive_think()
 		if ( self HasScriptGoal() || self.bot_lock_goal )
 			continue;
 
+		if(self isDefusing() || self isPlanting())
+			continue;
+
+		if (self inLastStand())
+			continue;
+
 		revivePlayer = undefined;
 		for(i = 0; i < level.players.size; i++)
 		{
@@ -1599,7 +1605,7 @@ bot_revive_think()
 		if (event != "new_goal")
 			self ClearScriptGoal();
 		
-		if(event != "goal" || (isDefined(revivePlayer.currentlyBeingRevived) && revivePlayer.currentlyBeingRevived) || !self isTouching(revivePlayer.revivetrigger) || self InLastStand() || self HasThreat())
+		if(event != "goal" || (isDefined(revivePlayer.currentlyBeingRevived) && revivePlayer.currentlyBeingRevived) || !self isTouching(revivePlayer.revivetrigger) || self InLastStand() || self isDefusing() || self isPlanting())
 		{
 			self.bot_lock_goal = false;
 			continue;
@@ -2734,7 +2740,7 @@ bot_kill_dog_think()
 			if(level.teamBased && dog.aiteam == self.pers["team"])
 				continue;
 
-			if(getConeDot(dog.origin, self.origin, myAngles) < 0.6 && !hasRecon)
+			if(DistanceSquared(dog.origin, self.origin) > 50*50 && getConeDot(dog.origin, self.origin, myAngles) < 0.6 && !hasRecon)
 				continue;
 
 			if(!bulletTracePassed(myEye, dog.origin+(0, 0, 5), false, dog))
