@@ -1605,7 +1605,7 @@ bot_revive_think()
 		if (event != "new_goal")
 			self ClearScriptGoal();
 		
-		if(event != "goal" || (isDefined(revivePlayer.currentlyBeingRevived) && revivePlayer.currentlyBeingRevived) || !self isTouching(revivePlayer.revivetrigger) || self InLastStand() || self isDefusing() || self isPlanting())
+		if(event != "goal" || !isDefined(revivePlayer) || (isDefined(revivePlayer.currentlyBeingRevived) && revivePlayer.currentlyBeingRevived) || !self isTouching(revivePlayer.revivetrigger) || self InLastStand() || self isDefusing() || self isPlanting())
 		{
 			self.bot_lock_goal = false;
 			continue;
@@ -2740,7 +2740,7 @@ bot_kill_dog_think()
 			if(level.teamBased && dog.aiteam == self.pers["team"])
 				continue;
 
-			if(DistanceSquared(dog.origin, self.origin) > 50*50 && getConeDot(dog.origin, self.origin, myAngles) < 0.6 && !hasRecon)
+			if(DistanceSquared(dog.origin, self.origin) > 64*64 && getConeDot(dog.origin, self.origin, myAngles) < 0.6 && !hasRecon)
 				continue;
 
 			if(!bulletTracePassed(myEye, dog.origin+(0, 0, 5), false, dog))
@@ -2808,6 +2808,9 @@ bot_equipment_kill_think()
 		for ( i = grenades.size - 1; i >= 0; i-- )
 		{
 			item = grenades[i];
+
+			if (!isDefined(item))
+				continue;
 
 			if ( !IsDefined( item.name ) )
 			{
