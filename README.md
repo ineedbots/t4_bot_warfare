@@ -59,6 +59,9 @@ Make sure to disable this DVAR by adding ```set bots_main_firstIsHost 0``` in yo
 ## Installation
 T4M requires an unpacked steamless version of the multiplayer World at War executable (otherwise known as LanFixed). You can use a [Steam Unpacker](https://github.com/atom0s/Steamless) on your multiplayer World at War Steam executable to acquire the required executable.
 
+Also make sure that PunkBuster is disabled!
+![Disabling PunkBuster](/main_shared/bw-assets/disable_pb.png)
+
 0. Make sure that [T4M](https://github.com/ineedbots/T4M) is installed, updated and working properly.
     - Download the [d3d9.dll](https://github.com/ineedbots/T4M/releases) and place it into the root of your World at War install
     - Download the [WaW MP LanFixed](https://bit.ly/3803IUC) and place it into the root of your World at War install, you will use this executable to run the game.
