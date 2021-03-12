@@ -45,6 +45,8 @@ added()
 	self.pers["bots"]["behavior"]["switch"] = 1; // percentage of how often the bot will switch weapons
 	self.pers["bots"]["behavior"]["class"] = 1; // percentage of how often the bot will change classes
 	self.pers["bots"]["behavior"]["jump"] = 100; // percentage of how often the bot will jumpshot and dropshot
+
+	self.pers["bots"]["behavior"]["quickscope"] = false; // is a quickscoper
 }
 
 /*
@@ -1001,6 +1003,9 @@ watchToLook()
 			
 		if(!self isInRange(self.bot.target.dist, curweap))
 			continue;
+
+		if (weaponClass(curweap) == "sniper")
+			continue;
 			
 		if(randomInt(100) > self.pers["bots"]["behavior"]["jump"])
 			continue;
@@ -1160,7 +1165,10 @@ aim()
 					else
 					{
 						if (self canAds(dist, curweap))
-							self thread pressADS();
+						{
+							if (weaponClass(curweap) != "sniper" || !self.pers["bots"]["behavior"]["quickscope"])
+								 self thread pressAds();
+						}
 					}
 					
 					self thread bot_lookat(last_pos + (0, 0, self getEyeHeight() + nadeAimOffset), aimspeed);
@@ -1216,7 +1224,19 @@ aim()
 					
 					canADS = (self canAds(dist, curweap) && conedot > 0.75);
 					if (canADS)
-						self thread pressADS();
+					{
+						stopAdsOverride = false;
+						if (weaponClass(curweap) == "sniper")
+						{
+							if (self.pers["bots"]["behavior"]["quickscope"] && self.bot.last_fire_time != -1 && getTime() - self.bot.last_fire_time < 1000)
+								stopAdsOverride = true;
+							else
+								self notify("kill_goal");
+						}
+
+						if (!stopAdsOverride)
+							self thread pressAds();
+					}
 					
 					if (trace_time > reaction_time)
 					{
@@ -1253,7 +1273,19 @@ aim()
 			
 			canADS = (self canAds(dist, curweap) && conedot > 0.75);
 			if (canADS)
-				self thread pressADS();
+			{
+				stopAdsOverride = false;
+				if (weaponClass(curweap) == "sniper")
+				{
+					if (self.pers["bots"]["behavior"]["quickscope"] && self.bot.last_fire_time != -1 && getTime() - self.bot.last_fire_time < 1000)
+						stopAdsOverride = true;
+					else
+						self notify("kill_goal");
+				}
+
+				if (!stopAdsOverride)
+					self thread pressAds();
+			}
 
 			if((!canADS || adsAmount >= 1.0 || self InLastStand() || self GetStance() == "prone") && (conedot > 0.95 || dist < level.bots_maxKnifeDistance) && getDvarInt("bots_play_fire"))
 				self botFire();
@@ -1431,7 +1463,7 @@ walk()
 			
 			if(self.bot.target.isplay && self.bot.target.trace_time && self canFire(curweap) && self isInRange(self.bot.target.dist, curweap))
 			{
-				if (self InLastStand() || self GetStance() == "prone")
+				if (self InLastStand() || self GetStance() == "prone" || (weaponClass(curweap) == "sniper" && self PlayerADS() > 0))
 					continue;
 
 				if(self.bot.target.rand <= self.pers["bots"]["behavior"]["strafe"])
