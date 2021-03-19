@@ -155,6 +155,7 @@ resetBotVars()
 	
 	self.bot.is_cur_full_auto = false;
 	self.bot.cur_weap_dist_multi = 1;
+	self.bot.is_cur_sniper = false;
 	
 	self.bot.rand = randomInt(100);
 	
@@ -327,6 +328,20 @@ SetWeaponDistMulti(weap)
 }
 
 /*
+	Is the weap a sniper
+*/
+IsWeapSniper(weap)
+{
+	if (weap == "none")
+		return false;
+
+	if (maps\mp\gametypes\_missions::getWeaponClass(weap) != "weapon_sniper")
+		return false;
+	
+	return true;
+}
+
+/*
 	The hold breath thread.
 */
 watchHoldBreath()
@@ -393,6 +408,7 @@ onWeaponChange()
 	weap = self GetCurrentWeapon();
 	self.bot.is_cur_full_auto = WeaponIsFullAuto(weap);
 	self.bot.cur_weap_dist_multi = SetWeaponDistMulti(weap);
+	self.bot.is_cur_sniper = IsWeapSniper(weap);
 	if (weap != "none")
 		self changeToWeap(weap);
 
@@ -402,6 +418,7 @@ onWeaponChange()
 		
 		self.bot.is_cur_full_auto = WeaponIsFullAuto(newWeapon);
 		self.bot.cur_weap_dist_multi = SetWeaponDistMulti(weap);
+		self.bot.is_cur_sniper = IsWeapSniper(weap);
 
 		if (newWeapon == "none")
 		{
@@ -442,7 +459,18 @@ reload_watch()
 	{
 		self waittill("reload_start");
 		self.bot.isreloading = true;
-		self waittill_notify_or_timeout("reload", 7.5);
+		
+		while(true)
+		{
+			ret = self waittill_any_timeout(7.5, "reload");
+
+			if (ret == "timeout")
+				break;
+
+			weap = self GetCurrentWeapon();
+			if (self GetWeaponAmmoClip(weap) >= WeaponClipSize(weap))
+				break;
+		}
 		self.bot.isreloading = false;
 	}
 }
@@ -1004,7 +1032,7 @@ watchToLook()
 		if(!self isInRange(self.bot.target.dist, curweap))
 			continue;
 
-		if (weaponClass(curweap) == "sniper")
+		if (self.bot.is_cur_sniper)
 			continue;
 			
 		if(randomInt(100) > self.pers["bots"]["behavior"]["jump"])
@@ -1166,7 +1194,7 @@ aim()
 					{
 						if (self canAds(dist, curweap))
 						{
-							if (weaponClass(curweap) != "sniper" || !self.pers["bots"]["behavior"]["quickscope"])
+							if (!self.bot.is_cur_sniper || !self.pers["bots"]["behavior"]["quickscope"])
 								self thread pressAds();
 						}
 					}
@@ -1226,7 +1254,7 @@ aim()
 					if (canADS)
 					{
 						stopAdsOverride = false;
-						if (weaponClass(curweap) == "sniper")
+						if (self.bot.is_cur_sniper)
 						{
 							if (self.pers["bots"]["behavior"]["quickscope"] && self.bot.last_fire_time != -1 && getTime() - self.bot.last_fire_time < 1000)
 								stopAdsOverride = true;
@@ -1240,7 +1268,7 @@ aim()
 					
 					if (trace_time > reaction_time)
 					{
-						if((!canADS || adsAmount >= 1.0 || self InLastStand() || self GetStance() == "prone") && (conedot > 0.95 || dist < level.bots_maxKnifeDistance) && getDvarInt("bots_play_fire"))
+						if((!canADS || adsAmount >= 1.0 || self InLastStand() || self GetStance() == "prone") && (conedot > 0.99 || dist < level.bots_maxKnifeDistance) && getDvarInt("bots_play_fire"))
 							self botFire();
 
 						if (isplay)
@@ -1275,7 +1303,7 @@ aim()
 			if (canADS)
 			{
 				stopAdsOverride = false;
-				if (weaponClass(curweap) == "sniper")
+				if (self.bot.is_cur_sniper)
 				{
 					if (self.pers["bots"]["behavior"]["quickscope"] && self.bot.last_fire_time != -1 && getTime() - self.bot.last_fire_time < 1000)
 						stopAdsOverride = true;
@@ -1463,7 +1491,7 @@ walk()
 			
 			if(self.bot.target.isplay && self.bot.target.trace_time && self canFire(curweap) && self isInRange(self.bot.target.dist, curweap))
 			{
-				if (self InLastStand() || self GetStance() == "prone" || (weaponClass(curweap) == "sniper" && self PlayerADS() > 0))
+				if (self InLastStand() || self GetStance() == "prone" || (self.bot.is_cur_sniper && self PlayerADS() > 0))
 					continue;
 
 				if(self.bot.target.rand <= self.pers["bots"]["behavior"]["strafe"])
