@@ -2421,7 +2421,7 @@ doReloadCancel()
 
 	for (;;)
 	{
-		self waittill("reload");
+		ret = self waittill_any_return("reload", "weapon_change");
 
 		if(self BotIsFrozen())
 			continue;
@@ -2433,9 +2433,16 @@ doReloadCancel()
 			continue;
 
 		curWeap = self GetCurrentWeapon();
-		// check single reloads
-		if (self GetWeaponAmmoClip(curWeap) < WeaponClipSize(curWeap))
+
+		if (!maps\mp\gametypes\_weapons::isSideArm( curWeap ) && !maps\mp\gametypes\_weapons::isPrimaryWeapon( curWeap ))
 			continue;
+
+		if (ret == "reload")
+		{
+			// check single reloads
+			if (self GetWeaponAmmoClip(curWeap) < WeaponClipSize(curWeap))
+				continue;
+		}
 
 		// check difficulty
 		if (self.pers["bots"]["skill"]["base"] <= 3)
@@ -2467,6 +2474,7 @@ doReloadCancel()
 		self BotChangeToWeapon(weap);
 		wait 0.25;
 		self BotChangeToWeapon(curWeap);
+		wait 2;
 	}
 }
 
@@ -2478,6 +2486,8 @@ bot_weapon_think()
 	self endon("death");
 	self endon("disconnect");
 	level endon("game_ended");
+
+	first = true;
 	
 	for(;;)
 	{
@@ -2504,13 +2514,23 @@ bot_weapon_think()
 			}
 		}
 		
-		if(curWeap != "none" && self getAmmoCount(curWeap) && curWeap != "satchel_charge_mp" && curWeap != "squadcommand_mp")
+		if (first)
 		{
-			if(randomInt(100) > self.pers["bots"]["behavior"]["switch"])
+			first = false;
+
+			if(randomInt(100) > self.pers["bots"]["behavior"]["initswitch"])
 				continue;
+		}
+		else
+		{
+			if(curWeap != "none" && self getAmmoCount(curWeap) && curWeap != "satchel_charge_mp" && curWeap != "squadcommand_mp")
+			{
+				if(randomInt(100) > self.pers["bots"]["behavior"]["switch"])
+					continue;
 				
-			if(hasTarget)
-				continue;
+				if(hasTarget)
+					continue;
+			}
 		}
 		
 		weaponslist = self getweaponslist();
