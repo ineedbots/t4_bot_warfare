@@ -1121,7 +1121,7 @@ nearAnyOfWaypoints(dist, waypoints)
 getNearestWaypointOfWaypoints(waypoints)
 {
 	answer = undefined;
-	closestDist = 999999999999;
+	closestDist = 2147483647;
 	for (i = 0; i < waypoints.size; i++)
 	{
 		waypoint = waypoints[i];

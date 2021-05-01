@@ -12,34 +12,34 @@
 */
 getRemoteWaypoints(mapname)
 {
-  url = "https://raw.githubusercontent.com/ineedbots/t4m_waypoints/master/" + mapname + "_wp.csv";
+	url = "https://raw.githubusercontent.com/ineedbots/t4m_waypoints/master/" + mapname + "_wp.csv";
 	filename = "waypoints/" + mapname + "_wp.csv";
 
-  PrintConsole("Attempting to get remote waypoints from " + url + "\n");
-  res = getLinesFromUrl(url, filename);
+	PrintConsole("Attempting to get remote waypoints from " + url + "\n");
+	res = getLinesFromUrl(url, filename);
 
-  if (!res.lines.size)
-    return;
+	if (!res.lines.size)
+		return;
 
-  waypointCount = int(res.lines[0]);
+	waypointCount = int(res.lines[0]);
 
 	waypoints = [];
-  PrintConsole("Loading remote waypoints...\n");
+	PrintConsole("Loading remote waypoints...\n");
 
 	for (i = 1; i <= waypointCount; i++)
-  {
-    tokens = tokenizeLine(res.lines[i], ",");
-    
-    waypoint = parseTokensIntoWaypoint(tokens);
+	{
+		tokens = tokenizeLine(res.lines[i], ",");
+	
+		waypoint = parseTokensIntoWaypoint(tokens);
 
-    waypoints[i-1] = waypoint;
-  }
+		waypoints[i-1] = waypoint;
+	}
 
-  if (waypoints.size)
-  {
-    level.waypoints = waypoints;
-    PrintConsole("Loaded " + waypoints.size + " waypoints from remote.\n");
-  }
+	if (waypoints.size)
+	{
+		level.waypoints = waypoints;
+		PrintConsole("Loaded " + waypoints.size + " waypoints from remote.\n");
+	}
 }
 
 /*
@@ -71,12 +71,12 @@ doVersionCheck()
 */
 getRemoteVersion()
 {
-  data = httpGet( "https://raw.githubusercontent.com/ineedbots/t4m_waypoints/master/version.txt" );
+	data = httpGet( "https://raw.githubusercontent.com/ineedbots/t4m_waypoints/master/version.txt" );
 
 	if (!isDefined(data))
 		return undefined;
 
-  return strtok(data, "\n")[0];
+	return strtok(data, "\n")[0];
 }
 
 /*
@@ -84,8 +84,8 @@ getRemoteVersion()
 */
 getLinesFromUrl(url, filename)
 {
-  result = spawnStruct();
-  result.lines = [];
+	result = spawnStruct();
+	result.lines = [];
 
 	data = HTTPGet(url);
 
@@ -109,7 +109,7 @@ getLinesFromUrl(url, filename)
 
 		line += c;
 	}
-  result.lines[result.lines.size] = line;
+	result.lines[result.lines.size] = line;
 
 	return result;
 }
