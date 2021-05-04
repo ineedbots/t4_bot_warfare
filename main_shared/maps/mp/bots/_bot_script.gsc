@@ -2061,6 +2061,8 @@ bot_use_equipment_think()
 		nade = undefined;
 		if (self GetAmmoCount("mine_bouncing_betty_mp"))
 			nade = "mine_bouncing_betty_mp";
+		if (self GetAmmoCount("satchel_charge_mp"))
+			nade = "satchel_charge_mp";
 		
 		if (!isDefined(nade))
 			continue;
@@ -2138,7 +2140,8 @@ bot_use_equipment_think()
 
 		if (self changeToWeapon(nade))
 		{
-			self thread fire_current_weapon();
+			if (nade != "satchel_charge_mp")
+				self thread fire_current_weapon();
 			self waittill_any_timeout(5, "grenade_fire", "weapon_change");
 			self notify("stop_firing_weapon");
 		}
@@ -2523,7 +2526,7 @@ bot_weapon_think()
 		}
 		else
 		{
-			if(curWeap != "none" && self getAmmoCount(curWeap) && curWeap != "satchel_charge_mp" && curWeap != "squadcommand_mp")
+			if(curWeap != "none" && self getAmmoCount(curWeap) && curWeap != "squadcommand_mp")
 			{
 				if(randomInt(100) > self.pers["bots"]["behavior"]["switch"])
 					continue;
@@ -2549,7 +2552,7 @@ bot_weapon_think()
 			if (maps\mp\gametypes\_weapons::isGrenade( weapon ))
 				continue;
 				
-			if(curWeap == weapon || weapon == "satchel_charge_mp" || weapon == "none" || weapon == "mine_bouncing_betty_mp" || weapon == "" || weapon == "squadcommand_mp")//c4 no work
+			if(curWeap == weapon || weapon == "satchel_charge_mp" || weapon == "none" || weapon == "mine_bouncing_betty_mp" || weapon == "" || weapon == "squadcommand_mp")
 				continue;
 				
 			weap = weapon;
