@@ -13,7 +13,6 @@ Now if you want to modify existing or create new waypoints for World at War maps
 The Bot Warfare mod comes with the Waypoint Editor out of the box, so its just a matter of telling the mod you want to use it. Its a matter of setting the `bots_main_debug` DVAR to `1`.
 
 Start your game, and load up the Bot Warfare mod. Now open your console with tilde(~).
-![Tilde](/main_shared/bw-assets/tilde.png)
 
 In the console, type in ```set bots_main_debug 1```.<br>
 ![Setting the dvar](/main_shared/bw-assets/console.png)
