@@ -2180,7 +2180,7 @@ botMoveTo(where)
 /*
 	Bots will look at the pos
 */
-bot_lookat(pos, time)
+bot_lookat(pos, time, vel)
 {
 	self notify("bots_aim_overlap");
 	self endon("bots_aim_overlap");
