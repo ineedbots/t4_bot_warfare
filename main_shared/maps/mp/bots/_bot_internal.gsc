@@ -213,6 +213,7 @@ doBotMovement()
 	self endon("death");
 
 	FORWARDAMOUNT = 25;
+	wasMantling = false;
 
 	for (i=0;;i+=0.05)
 	{
@@ -245,8 +246,15 @@ doBotMovement()
 
 		// climb through windows
 		if (self isMantling())
+		{
+			wasMantling = true;
 			self crouch();
-		
+		}
+		else if (wasMantling)
+		{
+			wasMantling = false;
+			self stand();
+		}
 		
 		startPos = self.origin + (0, 0, 50);
 		startPosForward = startPos + anglesToForward((0, angles[1], 0)) * FORWARDAMOUNT;
@@ -274,7 +282,7 @@ doBotMovement()
 		else
 		{
 			// check if need to crouch
-			if (bulletTracePassed(startPos - (0, 0, 25), startPosForward - (0, 0, 25), false, self))
+			if (bulletTracePassed(startPos - (0, 0, 25), startPosForward - (0, 0, 25), false, self) && !self.bot.climbing)
 				self crouch();
 		}
 
@@ -562,6 +570,9 @@ stance()
 		if (!isDefined(toStance))
 			toStance = "crouch";
 
+		if(toStance == "stand" && randomInt(100) <= self.pers["bots"]["behavior"]["crouch"])
+			toStance = "crouch";
+
 		if(toStance == "climb")
 		{
 			self.bot.climbing = true;
@@ -569,9 +580,6 @@ stance()
 		}
 			
 		if(toStance != "stand" && toStance != "crouch" && toStance != "prone")
-			toStance = "crouch";
-			
-		if(toStance == "stand" && randomInt(100) <= self.pers["bots"]["behavior"]["crouch"])
 			toStance = "crouch";
 			
 		if(toStance == "stand")
@@ -1828,7 +1836,7 @@ movetowards(goal)
 	{
 		self botMoveTo(goal);
 		
-		if(time > 3.5)
+		if(time > 3500)
 		{
 			time = 0;
 			if(distanceSquared(self.origin, lastOri) < 128)
@@ -1846,19 +1854,20 @@ movetowards(goal)
 			
 			lastOri = self.origin;
 		}
-		else if(timeslow > 1.5)
+		else if(timeslow > 0 && (timeslow % 1000) == 0)
 		{
 			self thread doMantle();
 		}
-		else if(timeslow > 0.75)
+		else if(time > 2500)
 		{
-			self crouch();
+			if(distanceSquared(self.origin, lastOri) < 128)
+				self crouch();
 		}
 		
 		wait 0.05;
-		time += 0.05;
+		time += 50;
 		if(lengthsquared(self getVelocity()) < 1000)
-			timeslow += 0.05;
+			timeslow += 50;
 		else
 			timeslow = 0;
 		
