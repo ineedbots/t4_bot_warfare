@@ -54,6 +54,7 @@ init()
 
 	level.waypoints = [];
 	level.waypointCount = 0;
+	level.bots_lowmem = false;
 
 	level waittill( "connected", player);
 
