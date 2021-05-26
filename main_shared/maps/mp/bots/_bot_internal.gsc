@@ -328,6 +328,9 @@ watchGrenadeFire()
 	{
 		self waittill( "grenade_fire", nade, weapname );
 
+		if (!isDefined(nade))
+			continue;
+
 		if ( weapname == "satchel_charge_mp" )
 			self thread watchC4Thrown(nade);
 	}
@@ -539,6 +542,10 @@ reload_watch()
 				break;
 
 			weap = self GetCurrentWeapon();
+
+			if (weap == "none")
+				break;
+
 			if (self GetWeaponAmmoClip(weap) >= WeaponClipSize(weap))
 				break;
 		}
@@ -2111,6 +2118,27 @@ pressADS(time)
 		wait time;
 	
 	self botAction("-ads");
+}
+
+/*
+	Bot will press use for a time.
+*/
+use(time)
+{
+	self endon("death");
+	self endon("disconnect");
+	self notify("bot_use");
+	self endon("bot_use");
+
+	if(!isDefined(time))
+		time = 0.05;
+	
+	self botAction("+use");
+	
+	if(time)
+		wait time;
+	
+	self botAction("-use");
 }
 
 /*
