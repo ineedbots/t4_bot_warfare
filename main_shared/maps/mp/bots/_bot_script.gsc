@@ -1097,47 +1097,6 @@ bots_watch_touch_obj(obj)
 }
 
 /*
-	Is bot near any of the given waypoints
-*/
-nearAnyOfWaypoints(dist, waypoints)
-{
-	dist *= dist;
-	for (i = 0; i < waypoints.size; i++)
-	{
-		waypoint = waypoints[i];
-
-		if (DistanceSquared(waypoint.origin, self.origin) > dist)
-			continue;
-
-		return true;
-	}
-
-	return false;
-}
-
-/*
-	Returns nearest waypoint of waypoints
-*/
-getNearestWaypointOfWaypoints(waypoints)
-{
-	answer = undefined;
-	closestDist = 2147483647;
-	for (i = 0; i < waypoints.size; i++)
-	{
-		waypoint = waypoints[i];
-		thisDist = DistanceSquared(self.origin, waypoint.origin);
-
-		if (isDefined(answer) && thisDist > closestDist)
-			continue;
-
-		answer = waypoint;
-		closestDist = thisDist;
-	}
-
-	return answer;
-}
-
-/*
 	Watches while the obj is being carried, calls 'goal' when complete
 */
 bot_escort_obj(obj, carrier)
@@ -1714,16 +1673,7 @@ bot_think_camp()
 		if(randomInt(100) > self.pers["bots"]["behavior"]["camp"])
 			continue;
 
-		campSpots = [];
-		distSq = 1024*1024;
-		for (i = 0; i < level.waypointsCamp.size; i++)
-		{
-			if (DistanceSquared(self.origin, level.waypointsCamp[i].origin) > distSq)
-				continue;
-
-			campSpots[campSpots.size] = level.waypointsCamp[i];
-		}
-		campSpot = PickRandom(campSpots);
+		campSpot = getWaypointForIndex(random(self waypointsNear(getWaypointsOfType("camp"), 1024)));
 
 		if (!isDefined(campSpot))
 			continue;
@@ -1976,18 +1926,9 @@ bot_use_tube_think()
 
 		loc = undefined;
 
-		if (!self nearAnyOfWaypoints(128, level.waypointsTube))
+		if (!self nearAnyOfWaypoints(128, getWaypointsOfType("tube")))
 		{
-			tubeWps = [];
-			distSq = 1024*1024;
-			for (i = 0; i < level.waypointsTube.size; i++)
-			{
-				if (DistanceSquared(self.origin, level.waypointsTube[i].origin) > distSq)
-					continue;
-				
-				tubeWps[tubeWps.size] = level.waypointsTube[i];
-			}
-			tubeWp = PickRandom(tubeWps);
+			tubeWp = getWaypointForIndex(random(self waypointsNear(getWaypointsOfType("tube"), 1024)));
 			
 			myEye = self GetEye();
 			if (!isDefined(tubeWp) || self HasScriptGoal() || self.bot_lock_goal)
@@ -2025,7 +1966,7 @@ bot_use_tube_think()
 		}
 		else
 		{
-			tubeWp = self getNearestWaypointOfWaypoints(level.waypointsTube);
+			tubeWp = getWaypointForIndex(self getNearestWaypointOfWaypoints(getWaypointsOfType("tube")));
 			loc = tubeWp.origin + AnglesToForward(tubeWp.angles) * 2048;
 		}
 
@@ -2105,18 +2046,9 @@ bot_use_equipment_think()
 		if (curWeap == "none" || !isWeaponDroppable(curWeap))
 			curWeap = self.lastDroppableWeapon;
 
-		if (!self nearAnyOfWaypoints(128, level.waypointsClay))
+		if (!self nearAnyOfWaypoints(128, getWaypointsOfType("claymore")))
 		{
-			clayWps = [];
-			distSq = 1024*1024;
-			for (i = 0; i < level.waypointsClay.size; i++)
-			{
-				if (DistanceSquared(self.origin, level.waypointsClay[i].origin) > distSq)
-					continue;
-
-				clayWps[clayWps.size] = level.waypointsClay[i];
-			}
-			clayWp = PickRandom(clayWps);
+			clayWp = getWaypointForIndex(random(self waypointsNear(getWaypointsOfType("claymore"), 1024)));
 			
 			if (!isDefined(clayWp) || self HasScriptGoal() || self.bot_lock_goal)
 			{
@@ -2144,7 +2076,7 @@ bot_use_equipment_think()
 		}
 		else
 		{
-			clayWp = self getNearestWaypointOfWaypoints(level.waypointsClay);
+			clayWp = getWaypointForIndex(self getNearestWaypointOfWaypoints(getWaypointsOfType("claymore")));
 			loc = clayWp.origin + AnglesToForward(clayWp.angles) * 2048;
 		}
 
@@ -2219,18 +2151,9 @@ bot_use_grenade_think()
 
 		loc = undefined;
 
-		if (!self nearAnyOfWaypoints(128, level.waypointsGren))
+		if (!self nearAnyOfWaypoints(128, getWaypointsOfType("grenade")))
 		{
-			nadeWps = [];
-			distSq = 1024*1024;
-			for (i = 0; i < level.waypointsGren.size; i++)
-			{
-				if (DistanceSquared(self.origin, level.waypointsGren[i].origin) > distSq)
-					continue;
-
-				nadeWps[nadeWps.size] = level.waypointsGren[i];
-			}
-			nadeWp = PickRandom(nadeWps);
+			nadeWp = getWaypointForIndex(random(self waypointsNear(getWaypointsOfType("grenade"), 1024)));
 
 			myEye = self GetEye();
 			if (!isDefined(nadeWp) || self HasScriptGoal() || self.bot_lock_goal)
@@ -2268,7 +2191,7 @@ bot_use_grenade_think()
 		}
 		else
 		{
-			nadeWp = self getNearestWaypointOfWaypoints(level.waypointsGren);
+			nadeWp = getWaypointForIndex(self getNearestWaypointOfWaypoints(getWaypointsOfType("grenade")));
 			loc = nadeWp.origin + AnglesToForward(nadeWp.angles) * 2048;
 		}
 
