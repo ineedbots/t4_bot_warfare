@@ -1393,10 +1393,10 @@ changeToWeapon(weap)
 	if (!self HasWeapon(weap))
 		return false;
 
+	self BotChangeToWeapon(weap);
+
 	if (self GetCurrentWeapon() == weap)
 		return true;
-
-	self BotChangeToWeapon(weap);
 
 	self waittill_any_timeout(5, "weapon_change");
 
@@ -2486,9 +2486,9 @@ doReloadCancel_loop()
 
 	// do the cancel
 	wait 0.1;
-	self BotChangeToWeapon(weap);
+	self thread ChangeToWeapon(weap);
 	wait 0.25;
-	self BotChangeToWeapon(curWeap);
+	self thread ChangeToWeapon(curWeap);
 	wait 2;
 }
 
@@ -2622,7 +2622,7 @@ bot_watch_think_mw2_loop()
 	if (randomInt(100) > chance)
 		return;
 
-	self ChangeToWeapon(tube);
+	self thread ChangeToWeapon(tube);
 }
 
 /*
