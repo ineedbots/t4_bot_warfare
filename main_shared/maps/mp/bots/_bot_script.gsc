@@ -36,6 +36,9 @@ connected()
 	self thread onBotSpawned();
 	self thread onSpawned();
 	self thread onDeath();
+
+	wait 0.1;
+	self.challengeData = [];
 }
 
 /*
