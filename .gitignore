@@ -15,6 +15,11 @@
 
 *.zip
 
+!/.astylerc
+!/z_deploy.bat
+!/deploy.bat
+!/deploy.js
+
 !/main/
 !/main_shared/
 /main/*
