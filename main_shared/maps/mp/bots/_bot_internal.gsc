@@ -2367,7 +2367,7 @@ bot_lookat( pos, time, vel, doAimPredict )
 	self endon( "spawned_player" );
 	level endon ( "game_ended" );
 
-	if ( level.gameEnded || level.inPrematchPeriod || self.bot.isfrozen )
+	if ( level.gameEnded || level.inPrematchPeriod || self.bot.isfrozen || !getDvarInt( "bots_play_aim" ) )
 		return;
 
 	if ( !isDefined( pos ) )
