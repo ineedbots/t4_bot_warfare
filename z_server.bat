@@ -24,6 +24,6 @@ echo (%date%)  -  (%time%) %name% server start.
 
 cd /D %LOCALAPPDATA%\Plutonium
 :server
-start /wait /abovenormal bin\plutonium-bootstrapper-win32.exe t4mp "%gamepath%" -dedicated -key "%key%" +set net_ip "%ip%" +set net_port "%port%" +set rcon_password "%rcon_password%" +set fs_game "%mod%" +exec "%cfg%" +map_rotate
+start /wait /abovenormal "%name%" "bin\plutonium-bootstrapper-win32.exe" t4mp "%gamepath%" -dedicated -key "%key%" +set net_ip "%ip%" +set net_port "%port%" +set rcon_password "%rcon_password%" +set fs_game "%mod%" +exec "%cfg%" +map_rotate
 echo (%date%)  -  (%time%) WARNING: %name% server closed or dropped... server restarts.
 goto Server
