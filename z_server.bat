@@ -3,7 +3,7 @@
 set key=
 ::RemoteCONtrol password, needed for most management tools like IW4MADMIN and B3. Do not skip if you installing IW4MADMIN.
 set rcon_password=
-::Name of the config file the server should use. (default: dedicated.cfg)
+::Name of the config file the server should use.
 set cfg=server.cfg
 ::Name of the server shown in the title of the cmd window. This will NOT bet shown ingame.
 set name=PT4 Bot Warfare
