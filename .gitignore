@@ -5,12 +5,7 @@
 !/.gitignore
 !/.vscode
 
-!/z_client.bat
-!/z_dev.bat
-!/z_devserver.bat
 !/z_server.bat
-!/z_serverdev.bat
-!/z_bots.bat
 !/README.md
 !/out
 
