@@ -6228,7 +6228,7 @@ removeBlockedAnims( array )
 }
 */
 
-doPrintDamage(dmg, hitloc)
+doPrintDamage(dmg, hitloc, flags)
 {
 	self endon( "disconnect" );
 
