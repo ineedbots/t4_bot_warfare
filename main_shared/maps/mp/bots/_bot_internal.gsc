@@ -2048,6 +2048,12 @@ movetowards( goal )
 		else if ( timeslow > 0 && ( timeslow % 1000 ) == 0 )
 		{
 			self thread doMantle();
+
+			// door open hack
+			if ( getDvar( "mapname" ) == "mp_lapatrouille" )
+			{
+				self thread use( 0.5 );
+			}
 		}
 		else if ( time == 2000 )
 		{
@@ -2336,12 +2342,12 @@ use( time )
 	if ( !isDefined( time ) )
 		time = 0.05;
 
-	self botAction( "+use" );
+	self botAction( "+activate" );
 
 	if ( time )
 		wait time;
 
-	self botAction( "-use" );
+	self botAction( "-activate" );
 }
 
 /*
