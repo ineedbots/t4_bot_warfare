@@ -342,7 +342,7 @@ watchPickupGun()
 	{
 		wait 1;
 
-		if ( self GetAmmoCount( self GetCurrentWeapon() ) )
+		if ( weap != "none" && self GetAmmoCount( weap ) )
 			continue;
 
 		self thread use( 0.5 );
