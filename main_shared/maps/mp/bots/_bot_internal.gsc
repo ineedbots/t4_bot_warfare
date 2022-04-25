@@ -342,6 +342,8 @@ watchPickupGun()
 	{
 		wait 1;
 
+		weap = self GetCurrentWeapon();
+
 		if ( weap != "none" && self GetAmmoCount( weap ) )
 			continue;
 
