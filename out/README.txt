@@ -1,4 +1,4 @@
-# T4M Bot Warfare
+# T4M Bot Warfare v2.1.0
 Bot Warfare is a GSC mod for the T4M project.
 
 It aims to add playable AI to the multiplayer games of World at War.
@@ -11,13 +11,7 @@ This is so inexperienced users of the mod can access with menu without any confi
 Make sure to disable this DVAR by adding 'set bots_main_firstIsHost 0' in your server config!
 
 ## Installation
-T4M requires an unpacked steamless version of the multiplayer World at War executable (otherwise known as LanFixed). You can use a Steam Unpacker on your multiplayer World at War Steam executable to acquire the required executable.
-
-Also make sure that PunkBuster is disabled!
-
-0. Make sure that T4M is installed, updated and working properly.
-  - Download the d3d9.dll from https://github.com/ineedbots/T4M/releases and place it into the root of your World at War install
-  - Download the WaW MP LanFixed from https://bit.ly/3803IUC and place it into the root of your World at War install, you will use this executable to run the game.
+0. Make sure that PlutoniumT4 is installed, updated and working properly.
 1. Extract all the files from the Bot Warfare release archive you downloaded to anywhere on your computer.
 2. Run the 'install.bat'. This copies the mod to your WaW mods folder.
 3. The mod is now installed, now run your game.
@@ -33,6 +27,17 @@ Also make sure that PunkBuster is disabled!
 - Pressing the menu buttons again closes menus.
 
 ## Changelog
+- v2.1.0
+  - Bot chatter system, bots_main_chat
+  - Greatly reduce script variable usage
+  - Improved bots mantling and stuck
+  - Fix some runtime errors
+  - Bots sprint more
+  - Improved bots sight on enemies
+  - Bots do random actions while waiting at an objective
+  - Improved bots from getting stuck
+  - Better bot difficulty management, bots_skill_min and bots_skill_max
+
 - v2.0.1
   - Reduced bots crouching
   - Increased bots sprinting

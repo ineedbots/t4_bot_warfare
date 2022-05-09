@@ -85,6 +85,7 @@ Make sure to disable this DVAR by adding ```set bots_main_firstIsHost 0``` in yo
 | bots_main_menu                   | Enable the in-game menu for hosts.                                                          | true          |
 | bots_main_debug                  | Enable the in-game waypoint editor.                                                         | false         |
 | bots_main_kickBotsAtEnd          | Kick the bots at the end of a match.                                                        | false         |
+| bots_main_chat                   | The rate bots will chat at, set to 0 to disable.                                            | 1.0           |
 | bots_manage_add                  | Amount of bots to add to the game, once bots are added, resets back to `0`.                 | 0             |
 | bots_manage_fill                 | Amount of players/bots (look at `bots_manage_fill_mode`) to maintain in the match.          | 0             |
 | bots_manage_fill_mode            | `bots_manage_fill` players/bots counting method.<ul><li>`0` - counts both players and bots.</li><li>`1` - only counts bots.</li></ul> | 0 |
@@ -118,6 +119,17 @@ Make sure to disable this DVAR by adding ```set bots_main_firstIsHost 0``` in yo
 | bots_play_aim                    | If the bots can aim.                                                                           | true       |
 
 ## Changelog
+- v2.1.0
+  - Bot chatter system, bots_main_chat
+  - Greatly reduce script variable usage
+  - Improved bots mantling and stuck
+  - Fix some runtime errors
+  - Bots sprint more
+  - Improved bots sight on enemies
+  - Bots do random actions while waiting at an objective
+  - Improved bots from getting stuck
+  - Better bot difficulty management, bots_skill_min and bots_skill_max
+
 - v2.0.1
   - Reduced bots crouching
   - Increased bots sprinting
