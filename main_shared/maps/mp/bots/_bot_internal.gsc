@@ -174,13 +174,28 @@ bot_skip_killcam()
 
 	for ( ;; )
 	{
-		wait 1;
+		self waittill( "begin_killcam" );
 
-		if ( isDefined( self.killcam ) )
-		{
-			self notify( "end_killcam" );
-		}
+		self thread doKillcamStuff();
 	}
+}
+
+/*
+	bots use copy cat and skip killcams
+*/
+doKillcamStuff()
+{
+	self endon( "disconnect" );
+
+	self BotNotifyBotEvent( "killcam", "start" );
+
+	wait 0.5 + randomInt( 3 );
+
+	wait 0.1;
+
+	self notify( "end_killcam" );
+
+	self BotNotifyBotEvent( "killcam", "stop" );
 }
 
 /*

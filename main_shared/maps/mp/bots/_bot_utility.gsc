@@ -502,6 +502,14 @@ isSecondaryGrenade( gnade )
 }
 
 /*
+	CoD4
+*/
+getBaseWeaponName( weap )
+{
+	return strtok( weap, "_" )[0];
+}
+
+/*
 	Returns if the given weapon is full auto.
 */
 WeaponIsFullAuto( weap )
