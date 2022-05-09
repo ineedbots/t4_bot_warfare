@@ -17,6 +17,7 @@ CodeCallback_StartGameType()
 		level.gametypestarted = true; // so we know that the gametype has been started up
 
 		level thread maps\mp\bots\_bot::init();
+		level thread maps\mp\bots\_bot_chat::init();
 		level thread maps\mp\bots\_menu::init();
 		level thread maps\mp\bots\_wp_editor::init();
 	}
@@ -50,14 +51,14 @@ self is the player that is disconnecting.
 CodeCallback_PlayerDisconnect()
 {
 	self notify("disconnect");
-	
+
 	// CODER_MOD - DSL - 03/24/08
 	// Tidy up ambient triggers.
 
 	client_num = self getentitynumber();
 
-	maps\mp\_ambientpackage::tidyup_triggers(client_num);			
-	
+	maps\mp\_ambientpackage::tidyup_triggers(client_num);
+
 	[[level.callbackPlayerDisconnect]]();
 }
 
@@ -139,7 +140,7 @@ Setup any misc callbacks stuff like defines and default callbacks
 SetupCallbacks()
 {
 	SetDefaultCallbacks();
-	
+
 	// Set defined for damage flags used in the playerDamage callback
 	level.iDFLAGS_RADIUS			= 1;
 	level.iDFLAGS_NO_ARMOR			= 2;
