@@ -57,14 +57,7 @@ Make sure to disable this DVAR by adding ```set bots_main_firstIsHost 0``` in yo
   - ... And pretty much everything you expect a Combat Training bot to have
 
 ## Installation
-T4M requires an unpacked steamless version of the multiplayer World at War executable (otherwise known as LanFixed). You can use a [Steam Unpacker](https://github.com/atom0s/Steamless) on your multiplayer World at War Steam executable to acquire the required executable.
-
-Also make sure that PunkBuster is disabled!
-![Disabling PunkBuster](/main_shared/bw-assets/disable_pb.png)
-
-0. Make sure that [T4M](https://github.com/ineedbots/T4M) is installed, updated and working properly.
-    - Download the [d3d9.dll](https://github.com/ineedbots/T4M/releases) and place it into the root of your World at War install
-    - Download the [WaW MP LanFixed](https://bit.ly/3803IUC) and place it into the root of your World at War install, you will use this executable to run the game.
+0. Make sure that [Plutonium T4](https://plutonium.pw/docs/install/) is installed, updated and working properly.
     - Download the [latest release](https://github.com/ineedbots/t4m_bot_warfare/releases) of Bot Warfare.
 1. Extract all the files from the Bot Warfare release archive you downloaded to anywhere on your computer.
 2. Run the 'install.bat'. This copies the mod to your WaW mods folder.
