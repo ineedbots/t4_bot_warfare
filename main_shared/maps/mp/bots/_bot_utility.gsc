@@ -1113,20 +1113,6 @@ cac_init_patch()
 }
 
 /*
-	clamps angle between -180 and 180
-*/
-AngleClamp180( angle )
-{
-	angleFrac = angle / 360.0;
-	angle = ( angleFrac - floor( angleFrac ) ) * 360.0;
-
-	if ( angle > 180.0 )
-		return angle - 360.0;
-
-	return angle;
-}
-
-/*
 	Clamps between value
 */
 Clamp( a, minv, maxv )
