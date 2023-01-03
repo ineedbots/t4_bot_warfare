@@ -21,7 +21,23 @@ export WINE_LOCATION="/home/deck/.var/app/net.lutris.Lutris/data/lutris/runners/
 
 # which bat to execute
 export SERVER_BAT_LOCATION="./z_server.bat"
+export SERVER_UPDATER_BAT_LOCATION="./z_server_updater.bat"
+export SERVER_WATCHDOG_BAT_LOCATION="./z_server_watchdog.bat"
+
+
+case "$1" in
+server) export BAT_LOCATION=$SERVER_BAT_LOCATION
+    ;;
+update) export BAT_LOCATION=$SERVER_UPDATER_BAT_LOCATION
+    ;;
+watchdog) export BAT_LOCATION=$SERVER_WATCHDOG_BAT_LOCATION
+    ;;
+*) export BAT_LOCATION=$SERVER_BAT_LOCATION
+    me=`basename "$0"`
+    echo "Usage: $me (server|update|watchdog)"
+    ;;
+esac
 
 
 # exec it
-$WINE_LOCATION $SERVER_BAT_LOCATION
+$WINE_LOCATION $BAT_LOCATION

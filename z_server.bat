@@ -13,10 +13,13 @@ set port=28968
 set ip=0.0.0.0
 ::Mod name (default "")
 set mod=
-::Only change this when you don't want to keep the bat files in the game folder. MOST WON'T NEED TO EDIT THIS!
-set gamepath=%cd%
+:: current dir of this .bat file
+SET mypath=%~dp0
+SET mypath=%mypath:~0,-1%
+::Only change this when you don't want to keep the bat files in the game folder. MOST WON'T NEED TO EDIT THIS!  %cd%
+set gamepath=%mypath%
 ::Your plutonium install path (leave default!)
-set pluto_path=%LOCALAPPDATA%\Plutonium
+set pluto_path=%gamepath%\Plutonium
 :: Gamemode; oneof t4sp, t4mp, t5sp, t5mp, iw5mp, t6mp, t6zm
 set pluto_game_mode=t4mp
 :: Other things to send to cmd

@@ -8,6 +8,8 @@
 !/.gitattributes
 
 !/z_server.bat
+!/z_server_updater.bat
+!/z_server_watchdog.bat
 !/z_server_wine.sh
 !/README.md
 !/out
