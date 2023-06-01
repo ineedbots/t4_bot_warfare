@@ -23,7 +23,7 @@ set pluto_path=%gamepath%\Plutonium
 :: Gamemode; oneof t4sp, t4mp, t5sp, t5mp, iw5mp, t6mp, t6zm
 set pluto_game_mode=t4mp
 :: Other things to send to cmd
-set cmd_extras=""
+set cmd_extras=
 
 
 title Plutonium - %name% - Server restarter
