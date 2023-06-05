@@ -24,6 +24,10 @@ set pluto_path=%gamepath%\Plutonium
 set pluto_game_mode=t4mp
 :: Other things to send to cmd
 set cmd_extras=
+:: Exe dedi path (leave default!)
+set exe_path=bin\plutonium-bootstrapper-win32.exe
+::IMPORTANT! Make sure the filename is unique for each server you clone!
+set log_file=games_mp.log
 
 
 title Plutonium - %name% - Server restarter
@@ -34,6 +38,6 @@ echo (%date%)  -  (%time%) %name% server start.
 
 cd /D %pluto_path%
 :server
-start /wait /abovenormal /b "%name%" "bin\plutonium-bootstrapper-win32.exe" %pluto_game_mode% "%gamepath%" -dedicated -key "%key%" +set net_ip "%ip%" +set net_port "%port%" +set rcon_password "%rcon_password%" +set fs_game "%mod%" +exec "%cfg%" %cmd_extras% +map_rotate
+start /wait /abovenormal /b "%name%" "%exe_path%" %pluto_game_mode% "%gamepath%" -dedicated -key "%key%" +set net_ip "%ip%" +set net_port "%port%" +set rcon_password "%rcon_password%" +set fs_game "%mod%" +set g_log "%log_file%" +exec "%cfg%" %cmd_extras% +map_rotate
 echo (%date%)  -  (%time%) WARNING: %name% server closed or dropped... server restarts.
-goto Server
+goto server
