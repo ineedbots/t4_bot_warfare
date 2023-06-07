@@ -1926,7 +1926,24 @@ killWalkOnEvents()
 	self endon( "disconnect" );
 	self endon( "death" );
 
-	self waittill_any( "flash_rumble_loop", "new_enemy", "new_goal_internal", "goal_internal", "bad_path_internal" );
+	self waittill_any( "new_enemy", "new_goal_internal", "goal_internal", "bad_path_internal" );
+
+	waittillframeend;
+
+	self notify( "kill_goal" );
+}
+
+/*
+	Will stop the goal walk when an enemy is found or flashed or a new goal appeared for the bot.
+*/
+watchOnFlared()
+{
+	self endon( "kill_goal" );
+	self endon( "disconnect" );
+	self endon( "death" );
+
+	while ( !self isFlared() )
+		wait 0.05;
 
 	waittillframeend;
 
@@ -1963,6 +1980,7 @@ doWalk( goal, dist, isScriptGoal )
 		self thread doWalkScriptNotify();
 
 	self thread killWalkOnEvents();
+	self thread watchOnFlared();
 	self thread watchOnGoal( goal, dist );
 
 	current = self initAStar( goal );
@@ -2484,7 +2502,7 @@ bot_lookat( pos, time, vel, doAimPredict )
 
 	for ( i = 0; i < steps; i++ )
 	{
-		myAngle = ( AngleClamp180(myAngle[0] + X), AngleClamp180(myAngle[1] + Y), 0 );
+		myAngle = ( AngleClamp180( myAngle[0] + X ), AngleClamp180( myAngle[1] + Y ), 0 );
 		self setPlayerAngles( myAngle );
 		wait 0.05;
 	}
