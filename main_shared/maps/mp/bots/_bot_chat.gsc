@@ -1629,6 +1629,11 @@ bot_chat_follow_watch( state, player, time, d, e, f, g )
 {
 	self endon( "disconnect" );
 
+	if ( !isDefined( player ) )
+	{
+		return;
+	}
+
 	switch ( state )
 	{
 		case "start":
