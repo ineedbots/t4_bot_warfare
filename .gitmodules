@@ -1,3 +1,0 @@
-[submodule "main_shared/waypoints"]
-	path = main_shared/waypoints
-	url = https://github.com/ineedbots/t4m_waypoints
