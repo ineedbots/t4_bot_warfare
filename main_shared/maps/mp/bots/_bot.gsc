@@ -16,6 +16,9 @@ init()
 	if ( !getDvarInt( "bots_main" ) )
 		return;
 
+	if ( !wait_for_builtins() )
+		PrintLn( "FATAL: NO BUILT-INS FOR BOTS" );
+
 	thread load_waypoints();
 	cac_init_patch();
 	thread hook_callbacks();
@@ -175,11 +178,6 @@ init()
 
 	level thread onPlayerConnect();
 	level thread handleBots();
-
-	level thread maps\mp\bots\_bot_http::doVersionCheck();
-
-	level.onlineGame = true;
-	level.rankedMatch = true;
 }
 
 /*
@@ -408,7 +406,7 @@ watchBotDebugEvent()
 
 		if ( msg == "debug" && GetDvarInt( "bots_main_debug" ) )
 		{
-			PrintConsole( "Bot Warfare debug: " + self.name + ": " + str + "\n" );
+			BotBuiltinPrintConsole( "Bot Warfare debug: " + self.name + ": " + str + "\n" );
 		}
 	}
 }

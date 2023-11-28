@@ -1270,116 +1270,12 @@ bot_go_defuse( plant )
 }
 
 /*
-	Creates a bomb use thread and waits for an output
+	Waits for the bot to stop moving
 */
-bot_use_bomb_thread( bomb )
+bot_wait_stop_move()
 {
-	self thread bot_use_bomb( bomb );
-	self waittill_any( "bot_try_use_fail", "bot_try_use_success" );
-}
-
-/*
-	Waits for the time to call bot_try_use_success or fail
-*/
-bot_bomb_use_time( wait_time )
-{
-	level endon( "game_ended" );
-	self endon( "death" );
-	self endon( "disconnect" );
-	self endon( "bot_try_use_fail" );
-	self endon( "bot_try_use_success" );
-
-	self waittill( "bot_try_use_weapon" );
-
-	wait 0.05;
-	elapsed = 0;
-
-	while ( wait_time > elapsed )
-	{
-		wait 0.05;//wait first so waittill can setup
-		elapsed += 0.05;
-
-		if ( self InLastStand() )
-		{
-			self notify( "bot_try_use_fail" );
-			return;//needed?
-		}
-	}
-
-	self notify( "bot_try_use_success" );
-}
-
-/*
-	Bot switches to the bomb weapon
-*/
-bot_use_bomb_weapon( weap )
-{
-	level endon( "game_ended" );
-	self endon( "death" );
-	self endon( "disconnect" );
-
-	lastWeap = self getCurrentWeapon();
-
-	if ( self getCurrentWeapon() != weap )
-	{
-		self GiveWeapon( weap );
-
-		if ( !self ChangeToWeapon( weap ) )
-		{
-			self notify( "bot_try_use_fail" );
-			return;
-		}
-	}
-	else
-	{
-		wait 0.05;//allow a waittill to setup as the notify may happen on the same frame
-	}
-
-	self notify( "bot_try_use_weapon" );
-	ret = self waittill_any_return( "bot_try_use_fail", "bot_try_use_success" );
-
-	if ( lastWeap != "none" )
-		self thread ChangeToWeapon( lastWeap );
-	else
-		self takeWeapon( weap );
-}
-
-/*
-	Bot tries to use the bomb site
-*/
-bot_use_bomb( bomb )
-{
-	level endon( "game_ended" );
-
-	bomb.inUse = true;
-
-	myteam = self.team;
-
-	self BotFreezeControls( true );
-
-	bomb [[bomb.onBeginUse]]( self );
-
-	self clientClaimTrigger( bomb.trigger );
-	self.claimTrigger = bomb.trigger;
-
-	self thread bot_bomb_use_time( bomb.useTime / 1000 );
-	self thread bot_use_bomb_weapon( bomb.useWeapon );
-
-	result = self waittill_any_return( "death", "disconnect", "bot_try_use_fail", "bot_try_use_success" );
-
-	if ( isDefined( self ) )
-	{
-		self.claimTrigger = undefined;
-		self BotFreezeControls( false );
-	}
-
-	bomb [[bomb.onEndUse]]( myteam, self, ( result == "bot_try_use_success" ) );
-	bomb.trigger releaseClaimedTrigger();
-
-	if ( result == "bot_try_use_success" )
-		bomb [[bomb.onUse]]( self );
-
-	bomb.inUse = false;
+	while ( !self isOnGround() || lengthSquared( self getVelocity() ) > 1 )
+		wait 0.25;
 }
 
 /*
@@ -1428,7 +1324,7 @@ changeToWeapon( weap )
 	if ( !self HasWeapon( weap ) )
 		return false;
 
-	self BotChangeToWeapon( weap );
+	self switchToWeapon( weap );
 
 	if ( self GetCurrentWeapon() == weap )
 		return true;
@@ -1488,99 +1384,6 @@ stop_go_target_on_death( tar )
 	tar waittill_either( "death", "disconnect" );
 
 	self ClearScriptGoal();
-}
-
-/*
-	Wait for the revive to complete
-*/
-bot_revive_wait( revive )
-{
-	level endon( "game_ended" );
-	self endon( "death" );
-	self endon( "disconnect" );
-	self endon( "bot_try_use_fail" );
-	self endon( "bot_try_use_success" );
-
-	timer = 0;
-
-	for ( reviveTime = GetDvarInt( "revive_time_taken" ); timer < reviveTime; timer += 0.05 )
-	{
-		wait 0.05;
-
-		if ( !isDefined( revive ) || !isDefined( revive.revivetrigger ) )
-		{
-			self notify( "bot_try_use_fail" );
-			return;
-		}
-	}
-
-	self notify( "bot_try_use_success" );
-}
-
-/*
-	Bots revive
-*/
-bots_use_revive( revive )
-{
-	level endon( "game_ended" );
-
-	self.revivingTeammate = true;
-	revive.currentlyBeingRevived = true;
-	self BotFreezeControls( true );
-
-	self.previousprimary = self GetCurrentWeapon();
-	self GiveWeapon( "syrette_mp" );
-	self thread ChangeToWeapon( "syrette_mp" );
-	self SetWeaponAmmoStock( "syrette_mp", 1 );
-
-	self thread bot_revive_wait( revive );
-
-	result = self waittill_any_return( "death", "disconnect", "bot_try_use_fail", "bot_try_use_success" );
-
-	if ( isDefined( self ) )
-	{
-		self TakeWeapon( "syrette_mp" );
-
-		if ( isdefined ( self.previousPrimary ) && self.previousPrimary != "none" )
-			self thread changeToWeapon( self.previousPrimary );
-
-		self.previousprimary = undefined;
-		self notify( "completedRevive" );
-		self.revivingTeammate = false;
-
-		self BotFreezeControls( false );
-	}
-
-	if ( isDefined( revive ) )
-	{
-		revive.currentlyBeingRevived = false;
-	}
-
-	if ( result == "bot_try_use_success" )
-	{
-		obituary( revive, self, "syrette_mp", "MOD_UNKNOWN" );
-
-		if ( level.rankedmatch )
-		{
-			self maps\mp\gametypes\_rank::giveRankXP( "revive", level.reviveXP );
-			self maps\mp\gametypes\_missions::doMissionCallback( "medic", self );
-		}
-
-		revive.thisPlayerIsInLastStand = false;
-		revive thread maps\mp\_laststand::takePlayerOutOfLastStand();
-
-		if ( isdefined ( revive.previousPrimary ) && revive.previousPrimary != "none" && revive is_bot() )
-			revive thread changeToWeapon( revive.previousPrimary );
-	}
-}
-
-/*
-	Bots revive the player
-*/
-bot_use_revive_thread( revivePlayer )
-{
-	self thread bots_use_revive( revivePlayer );
-	self waittill_any( "bot_try_use_fail", "bot_try_use_success" );
 }
 
 /*
@@ -1646,9 +1449,12 @@ bot_revive_think_loop()
 	self BotNotifyBotEvent( "revive", "start", revivePlayer );
 
 	self SetScriptGoal( self.origin, 64 );
+	self bot_wait_stop_move();
 
-	self bot_use_revive_thread( revivePlayer );
-	wait 1;
+	waitTime = GetDvarFloat( "revive_time_taken" ) + 2.5;
+	self thread BotPressUse( waitTime );
+	wait waitTime;
+
 	self ClearScriptGoal();
 	self.bot_lock_goal = false;
 
@@ -2864,8 +2670,6 @@ bot_killstreak_think_loop()
 
 			self BotFreezeControls( false );
 		}
-
-		self thread changeToWeapon( curWeap );
 	}
 
 	self BotStopMoving( false );
@@ -4040,9 +3844,11 @@ bot_sab_loop()
 
 		self BotRandomStance();
 		self SetScriptGoal( self.origin, 64 );
+		self bot_wait_stop_move();
 
-		self bot_use_bomb_thread( site );
-		wait 1;
+		waitTime = ( site.useTime / 1000 ) + 2.5;
+		self thread BotPressUse( waitTime );
+		wait waitTime;
 
 		self ClearScriptGoal();
 		self.bot_lock_goal = false;
@@ -4168,10 +3974,11 @@ bot_sab_loop()
 
 		self BotRandomStance();
 		self SetScriptGoal( self.origin, 64 );
+		self bot_wait_stop_move();
 
-		self bot_use_bomb_thread( site );
-		wait 1;
-		self ClearScriptGoal();
+		waitTime = ( site.useTime / 1000 ) + 2.5;
+		self thread BotPressUse( waitTime );
+		wait waitTime;
 
 		self.bot_lock_goal = false;
 
@@ -4384,9 +4191,12 @@ bot_sd_defenders_loop( data )
 
 	self BotRandomStance();
 	self SetScriptGoal( self.origin, 64 );
+	self bot_wait_stop_move();
 
-	self bot_use_bomb_thread( defuse );
-	wait 1;
+	waitTime = ( defuse.useTime / 1000 ) + 2.5;
+	self thread BotPressUse( waitTime );
+	wait waitTime;
+
 	self ClearScriptGoal();
 	self.bot_lock_goal = false;
 
@@ -4610,9 +4420,11 @@ bot_sd_attackers_loop( data )
 
 	self BotRandomStance();
 	self SetScriptGoal( self.origin, 64 );
+	self bot_wait_stop_move();
 
-	self bot_use_bomb_thread( plant );
-	wait 1;
+	waitTime = ( plant.useTime / 1000 ) + 2.5;
+	self thread BotPressUse( waitTime );
+	wait waitTime;
 
 	self ClearScriptGoal();
 	self.bot_lock_goal = false;

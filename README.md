@@ -1,11 +1,11 @@
-![GitHub Logo](/main_shared/bw-assets/bw-logo.png)
+![GitHub Logo](/bw-assets/bw-logo.png)
 
-# T4M Bot Warfare
-Bot Warfare is a GSC mod for the [T4M project](https://github.com/ineedbots/T4M) and [PlutoniumT4 project](https://plutonium.pw/).
+# T4 Bot Warfare
+Bot Warfare is a GSC mod for the [PlutoniumT4 project](https://plutonium.pw/).
 
 It aims to add playable AI to the multiplayer games of World at War.
 
-You can find the ModDB release post [here](https://www.moddb.com/mods/bot-warfare/downloads/t4m-bot-warfare-latest).
+You can find the ModDB release post [here](https://www.moddb.com/mods/bot-warfare/downloads/t4-bot-warfare-latest).
 
 ## <span style="color:red">Important to public dedicated servers</span>
 The ```bots_main_firstIsHost``` DVAR is enabled by default!
@@ -22,7 +22,7 @@ Make sure to disable this DVAR by adding ```set bots_main_firstIsHost 0``` in yo
 - [Credits](#Credits)
 
 ## Features
-- A Waypoint Editor for creating and modifying bot's waypoints of traversing the map. Have a look at [Using the Waypoint editor](/main_shared/bw-assets/wpedit.md).
+- A Waypoint Editor for creating and modifying bot's waypoints of traversing the map. Have a look at [Using the Waypoint editor](/bw-assets/wpedit.md).
 
 - A clean and nice menu, you can edit every bot DVAR within in-game.
 
@@ -58,7 +58,7 @@ Make sure to disable this DVAR by adding ```set bots_main_firstIsHost 0``` in yo
 
 ## Installation
 0. Make sure that [Plutonium T4](https://plutonium.pw/docs/install/) is installed, updated and working properly.
-    - Download the [latest release](https://github.com/ineedbots/t4m_bot_warfare/releases) of Bot Warfare.
+    - Download the [latest release](https://github.com/ineedbots/t4_bot_warfare/releases) of Bot Warfare.
 1. Extract all the files from the Bot Warfare release archive you downloaded to anywhere on your computer.
 2. Run the 'install.bat'. This copies the mod to your WaW mods folder.
 3. The mod is now installed, now run your game.
