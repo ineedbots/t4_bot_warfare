@@ -1,4 +1,4 @@
-# T4M Bot Warfare Waypoint Editor
+# T4 Bot Warfare Waypoint Editor
 First things first, Bot Warfare uses the [AStar search algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm) for creating paths for the bots to find their way through a map. 
 
 The AStar search algorithm requires a [set of waypoints](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)) defining where all the paths are in the map.
@@ -15,19 +15,18 @@ The Bot Warfare mod comes with the Waypoint Editor out of the box, so its just a
 Start your game, and load up the Bot Warfare mod. Now open your console with tilde(~).
 
 In the console, type in ```set bots_main_debug 1```.<br>
-![Setting the dvar](/main_shared/bw-assets/console.png)
+![Setting the dvar](/bw-assets/console.png)
 
 Now start a match with the map you want to edit.
 
 It should be noted that waypoints load in this following order;
 1. checks the 'waypoints' folder (FS_Game\waypoints) for a csv file
 2. loads the waypoints from GSC (maps\mp\bots\waypoints)
-3. checks online at [this repo](https://github.com/ineedbots/t4m_waypoints) for the waypoints
 
 If all fail to load waypoints, there will be no waypoints and the bots will not know how to navigate the map.
 
 ## The Editor
-![The editor](/main_shared/bw-assets/editor.png)<br>
+![The editor](/bw-assets/editor.png)<br>
 This is the Waypoint Editor. You can view, edit and create the waypoint graph.
 - Each red number you see in the world is a waypoint.
 - The green string you see is the type of that waypoint.
@@ -65,10 +64,10 @@ Each button has a secondary modifier button, and can be pressed shortly after pr
 Okay, now that you know how to control the Editor, lets now go ahead and create some waypoints.
 
 Here I added a waypoint.<br>
-![Adding a waypoint](/main_shared/bw-assets/editor-addwp.png)
+![Adding a waypoint](/bw-assets/editor-addwp.png)
 
 And I added a second waypoint.<br>
-![Adding another waypoint](/main_shared/bw-assets/editor-addwp2.png)
+![Adding another waypoint](/bw-assets/editor-addwp2.png)
 
 There are several types of waypoints, holding a modifier button before pressing the add waypoint button will create a special type of waypoint.
 - Types of waypoints:
@@ -80,7 +79,7 @@ There are several types of waypoints, holding a modifier button before pressing 
   - climb - bots will look at the angles you were looking at when you made the waypoint and climb (use this for ladders and mantles)
 
 Here I linked the two waypoints together.<br>
-![Linking waypoints](/main_shared/bw-assets/editor-link.png)
+![Linking waypoints](/bw-assets/editor-link.png)
 
 Linking waypoints are very important, it tells the bots that they can reach waypoint 1 from waypoint 0, and vice versa.
 
@@ -91,6 +90,4 @@ Once you feel like you are done, press the Save buttons. This will generate a [C
 That is it! The waypoints should load next time you start your game!
 
 Your waypoints CSV file will be located at ```<fs_game>/waypoints/<mapname>_wp.csv```. (main folder if fs_game is blank)<br>
-![Location](/main_shared/bw-assets/saved.png)
-
-You can share your waypoints publicly (and can be loaded by other users of Bot Warfare remotely) by making a Pull Request to the [T4M_Waypoints repo](https://github.com/ineedbots/t4m_waypoints).
+![Location](/bw-assets/saved.png)
