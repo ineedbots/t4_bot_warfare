@@ -201,7 +201,7 @@ handleBots()
 
 	for ( i = 0; i < bots.size; i++ )
 	{
-		bots[i] RemoveTestClient();
+		kick( bots[i] getEntityNumber() );
 	}
 }
 
@@ -792,7 +792,7 @@ addBots_loop()
 		tempBot = PickRandom( getBotArray() );
 
 		if ( isDefined( tempBot ) )
-			tempBot RemoveTestClient();
+			kick( tempBot getEntityNumber() );
 	}
 }
 
