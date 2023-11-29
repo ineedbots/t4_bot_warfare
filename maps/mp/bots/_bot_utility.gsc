@@ -106,6 +106,19 @@ BotBuiltinBotMovement( left, forward )
 }
 
 /*
+	Test if is a bot
+*/
+BotBuiltinIsBot()
+{
+	if ( isDefined( level.bot_builtins ) && isDefined( level.bot_builtins["isbot"] ) )
+	{
+		return self [[ level.bot_builtins["isbot" ]]]();
+	}
+
+	return false;
+}
+
+/*
 	Returns if player is the host
 */
 is_host()
@@ -162,7 +175,7 @@ doHostCheck()
 */
 is_bot()
 {
-	return self isBot();
+	return self BotBuiltinIsBot();
 }
 
 /*
