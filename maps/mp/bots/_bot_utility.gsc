@@ -127,7 +127,7 @@ doHostCheck()
 
 	if ( getDvar( "bots_main_firstIsHost" ) != "0" )
 	{
-		BotBuiltinPrintConsole( "WARNING: bots_main_firstIsHost is enabled\n" );
+		BotBuiltinPrintConsole( "WARNING: bots_main_firstIsHost is enabled" );
 
 		if ( getDvar( "bots_main_firstIsHost" ) == "1" )
 		{
@@ -1336,7 +1336,7 @@ readWpsFromFile( mapname )
 	if ( !res.lines.size )
 		return waypoints;
 
-	BotBuiltinPrintConsole( "Attempting to read waypoints from " + filename + "\n" );
+	BotBuiltinPrintConsole( "Attempting to read waypoints from " + filename );
 
 	waypointCount = int( res.lines[0] );
 
@@ -1370,7 +1370,7 @@ load_waypoints()
 	if ( wps.size )
 	{
 		level.waypoints = wps;
-		BotBuiltinPrintConsole( "Loaded " + wps.size + " waypoints from file.\n" );
+		BotBuiltinPrintConsole( "Loaded " + wps.size + " waypoints from file" );
 	}
 	else
 	{
@@ -1382,7 +1382,7 @@ load_waypoints()
 		}
 
 		if ( level.waypoints.size )
-			BotBuiltinPrintConsole( "Loaded " + level.waypoints.size + " waypoints from script.\n" );
+			BotBuiltinPrintConsole( "Loaded " + level.waypoints.size + " waypoints from script" );
 	}
 
 	if ( !level.waypoints.size )
