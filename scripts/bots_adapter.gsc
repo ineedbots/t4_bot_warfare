@@ -12,7 +12,7 @@ init()
 
 do_printconsole( s )
 {
-	PrintConsole( s + "\n" );
+	PrintConsole( s );
 }
 
 do_filewrite( file, contents, mode )
