@@ -12,5 +12,6 @@ This repo contains all of the waypoints in CSV format, a format that Bot Warfare
 ## Waypoint Creators
 
 - JAK (BF2all)
+- Will666 (shambler_666)
 
 
