@@ -1257,7 +1257,7 @@ Clamp( a, minv, maxv )
 /*
 	converts a string into a float
 */
-float( num )
+float_old( num )
 {
 	setdvar( "temp_dvar_bot_util", num );
 
@@ -1273,7 +1273,7 @@ parseTokensIntoWaypoint( tokens )
 
 	orgStr = tokens[0];
 	orgToks = strtok( orgStr, " " );
-	waypoint.origin = ( float( orgToks[0] ), float( orgToks[1] ), float( orgToks[2] ) );
+	waypoint.origin = ( float_old( orgToks[0] ), float_old( orgToks[1] ), float_old( orgToks[2] ) );
 
 	childStr = tokens[1];
 	childToks = strtok( childStr, " " );
@@ -1290,7 +1290,9 @@ parseTokensIntoWaypoint( tokens )
 	if ( isDefined( anglesStr ) && anglesStr != "" )
 	{
 		anglesToks = strtok( anglesStr, " " );
-		waypoint.angles = ( float( anglesToks[0] ), float( anglesToks[1] ), float( anglesToks[2] ) );
+
+		if ( anglesToks.size >= 3 )
+			waypoint.angles = ( float_old( anglesToks[0] ), float_old( anglesToks[1] ), float_old( anglesToks[2] ) );
 	}
 
 	return waypoint;
