@@ -846,7 +846,6 @@ createTargetObj( ent, theTime )
 	obj.trace_time_time = 0;
 	obj.rand = randomInt( 100 );
 	obj.didlook = false;
-	obj.isplay = isPlayer( ent );
 	obj.offset = undefined;
 	obj.bone = undefined;
 	obj.aim_offset = undefined;
@@ -1166,7 +1165,7 @@ onNewEnemy()
 		if ( !isDefined( self.bot.target ) )
 			continue;
 
-		if ( !isDefined( self.bot.target.entity ) || !self.bot.target.isplay )
+		if ( !isDefined( self.bot.target.entity ) || !isPlayer( self.bot.target.entity ) )
 			continue;
 
 		if ( self.bot.target.didlook )
@@ -1308,7 +1307,8 @@ aim_loop()
 			last_pos = self.bot.target.last_seen_pos;
 			target = self.bot.target.entity;
 			conedot = 0;
-			isplay = self.bot.target.isplay;
+			isplay = isPlayer( self.bot.target.entity );
+			isact = isAi( self.bot.target.entity );
 
 			offset = self.bot.target.offset;
 
@@ -1422,8 +1422,7 @@ aim_loop()
 						self thread bot_lookat( aimpos, aimspeed );
 				}
 
-				// knifing dogs?
-				if ( isplay && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && getDvarInt( "bots_play_knife" ) )
+				if ( ( isplay || isact ) && !self.bot.isknifingafter && conedot > 0.9 && dist < level.bots_maxKnifeDistance && trace_time > reaction_time && getDvarInt( "bots_play_knife" ) )
 				{
 					self clear_bot_after_target();
 					self thread knife( target );
@@ -1695,7 +1694,7 @@ walk_loop()
 			return;
 		}
 
-		if ( self.bot.target.isplay && self.bot.target.trace_time && self canFire( curweap ) && self isInRange( self.bot.target.dist, curweap ) )
+		if ( isPlayer( self.bot.target.entity ) && self.bot.target.trace_time && self canFire( curweap ) && self isInRange( self.bot.target.dist, curweap ) )
 		{
 			if ( self InLastStand() || self GetStance() == "prone" || ( self.bot.is_cur_sniper && self PlayerADS() > 0 ) )
 				return;
