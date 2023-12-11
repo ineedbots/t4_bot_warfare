@@ -669,9 +669,19 @@ WeaponIsFullAuto( weap )
 */
 GetEyeHeight()
 {
-	myEye = self GetEyePos();
+	stance = self GetStance();
 
-	return myEye[2] - self.origin[2];
+	if ( self inLastStand() || stance == "prone" )
+	{
+		return 11;
+	}
+
+	if ( stance == "crouch" )
+	{
+		return 40;
+	}
+
+	return 60;
 }
 
 /*
@@ -679,7 +689,7 @@ GetEyeHeight()
 */
 GetEyePos()
 {
-	return self getTagOrigin( "tag_eye" );
+	return self.origin + ( 0, 0, self GetEyeHeight() );
 }
 
 /*
