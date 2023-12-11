@@ -1,5 +1,5 @@
 *.zip
-*.log
+*.log*
 *.stat
 logs/
 demos/

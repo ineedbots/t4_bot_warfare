@@ -2926,7 +2926,7 @@ bot_kill_dog_think_loop()
 
 	self BotNotifyBotEvent( "attack_dog", "start", targetDog );
 
-	self SetScriptEnemy( targetDog, ( 0, 0, 5 ) );
+	self SetScriptEnemy( targetDog );
 	self bot_dog_attack( targetDog );
 	self ClearScriptEnemy();
 
@@ -2943,7 +2943,7 @@ bot_kill_dog_think()
 
 	for ( ;; )
 	{
-		wait( 1 );
+		wait( 0.5 );
 
 		if ( self HasScriptEnemy() )
 			continue;

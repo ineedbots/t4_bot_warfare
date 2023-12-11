@@ -1407,6 +1407,24 @@ aim_loop()
 					else
 						self thread bot_lookat( aimpos, aimspeed, target getVelocity(), true );
 				}
+				else if ( isact )
+				{
+					aimpos = target getTagOrigin( "j_spine4" );
+
+					if ( !isDefined( aimpos ) )
+						return;
+
+					aimpos += offset;
+					aimpos += aimoffset;
+					aimpos += ( 0, 0, nadeAimOffset );
+
+					conedot = getConeDot( aimpos, eyePos, angles );
+
+					if ( isDefined( self.bot.knifing_target ) || ( !nadeAimOffset && conedot > 0.999 && lengthsquared( aimoffset ) < 0.05 ) )
+						self thread bot_lookat( aimpos, 0.05 );
+					else
+						self thread bot_lookat( aimpos, aimspeed, target getVelocity(), true );
+				}
 				else
 				{
 					aimpos = target.origin;
