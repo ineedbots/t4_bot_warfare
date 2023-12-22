@@ -765,13 +765,6 @@ get_random_attachment( weapon, rank )
 
 		if ( reasonable )
 		{
-			/*  switch(att)
-						    {
-							case "acog":
-								if(weapon != "m40a3")
-									continue;
-								break;
-						    }*/
 		}
 
 		return att;
@@ -5602,9 +5595,7 @@ bot_war_loop( data )
 	}
 
 	// check if should cap
-	if ( game[ "war_momentum" ][ myTeam + "_multiplier" ] == getdvarint( "twar_momentumMaxMultiplier" ) ||
-	    flag.useobj.numtouching[ otherTeam ] > flag.useobj.numtouching[ myTeam ] ||
-	    data.rand > 90 || ourFlags < theirFlags )
+	if ( game[ "war_momentum" ][ myTeam + "_multiplier" ] == getdvarint( "twar_momentumMaxMultiplier" ) || flag.useobj.numtouching[ otherTeam ] > flag.useobj.numtouching[ myTeam ] || data.rand > 90 || ourFlags < theirFlags )
 	{
 		self BotNotifyBotEvent( "twar", "go", "cap" );
 
