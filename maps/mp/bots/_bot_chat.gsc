@@ -15,8 +15,10 @@
 */
 init()
 {
-	if ( getDvar( "bots_main_chat" ) == "" )
-		setDvar( "bots_main_chat", 1.0 );
+	if ( getdvar( "bots_main_chat" ) == "" )
+	{
+		setdvar( "bots_main_chat", 1.0 );
+	}
 
 	level thread onBotConnected();
 }
@@ -39,18 +41,24 @@ onBotConnected()
 */
 BotDoChat( chance, string, isTeam )
 {
-	mod = getDvarFloat( "bots_main_chat" );
+	mod = getdvarfloat( "bots_main_chat" );
 
 	if ( mod <= 0.0 )
+	{
 		return;
+	}
 
 	if ( chance >= 100 || mod >= 100.0 ||
-	    ( RandomInt( 100 ) < ( chance * mod ) + 0 ) )
+	    ( randomint( 100 ) < ( chance * mod ) + 0 ) )
 	{
-		if ( isDefined( isTeam ) && isTeam )
+		if ( isdefined( isTeam ) && isTeam )
+		{
 			self sayteam( string );
+		}
 		else
+		{
 			self sayall( string );
+		}
 	}
 }
 
@@ -81,9 +89,9 @@ start_death_watch()
 	{
 		self waittill( "death" );
 
-		self thread bot_chat_death_watch( self.lastAttacker, self.bots_lastKS );
+		self thread bot_chat_death_watch( self.lastattacker, self.bots_lastks );
 
-		self.bots_lastKS = 0;
+		self.bots_lastks = 0;
 	}
 }
 
@@ -110,10 +118,12 @@ start_random_chat()
 	{
 		wait 1;
 
-		if ( randomInt( 100 ) < 1 )
+		if ( randomint( 100 ) < 1 )
 		{
-			if ( randomInt( 100 ) < 1 && isAlive( self ) )
+			if ( randomint( 100 ) < 1 && isalive( self ) )
+			{
 				self thread doQuickMessage();
+			}
 		}
 	}
 }
@@ -125,24 +135,24 @@ start_killed_watch()
 {
 	self endon( "disconnect" );
 
-	self.bots_lastKS = 0;
+	self.bots_lastks = 0;
 
 	for ( ;; )
 	{
 		self waittill( "killed_enemy" );
 		wait 0.05;
 
-		if ( self.bots_lastKS < self.cur_kill_streak )
+		if ( self.bots_lastks < self.cur_kill_streak )
 		{
-			for ( i = self.bots_lastKS + 1; i <= self.cur_kill_streak; i++ )
+			for ( i = self.bots_lastks + 1; i <= self.cur_kill_streak; i++ )
 			{
 				self thread bot_chat_streak( i );
 			}
 		}
 
-		self.bots_lastKS = self.cur_kill_streak;
+		self.bots_lastks = self.cur_kill_streak;
 
-		self thread bot_chat_killed_watch( self.lastKilledPlayer );
+		self thread bot_chat_killed_watch( self.lastkilledplayer );
 	}
 }
 
@@ -378,7 +388,7 @@ doQuickMessage()
 	self endon( "disconnect" );
 	self endon( "death" );
 
-	if ( !isDefined( self.talking ) || !self.talking )
+	if ( !isdefined( self.talking ) || !self.talking )
 	{
 		self.talking = true;
 		soundalias = "";
@@ -416,15 +426,17 @@ doQuickMessage()
 
 		if ( soundalias != "" && saytext != "" )
 		{
-			self maps\mp\gametypes\_quickmessages::saveHeadIcon();
-			self maps\mp\gametypes\_quickmessages::doQuickMessage( soundalias, saytext );
+			self maps\mp\gametypes\_quickmessages::saveheadicon();
+			self maps\mp\gametypes\_quickmessages::doquickmessage( soundalias, saytext );
 			wait 2;
-			self maps\mp\gametypes\_quickmessages::restoreHeadIcon();
+			self maps\mp\gametypes\_quickmessages::restoreheadicon();
 		}
 		else
 		{
 			if ( randomint( 100 ) < 1 )
+			{
 				self BotDoChat( 1, maps\mp\bots\_bot_utility::keyCodeToString( 2 ) + maps\mp\bots\_bot_utility::keyCodeToString( 17 ) + maps\mp\bots\_bot_utility::keyCodeToString( 4 ) + maps\mp\bots\_bot_utility::keyCodeToString( 3 ) + maps\mp\bots\_bot_utility::keyCodeToString( 8 ) + maps\mp\bots\_bot_utility::keyCodeToString( 19 ) + maps\mp\bots\_bot_utility::keyCodeToString( 27 ) + maps\mp\bots\_bot_utility::keyCodeToString( 19 ) + maps\mp\bots\_bot_utility::keyCodeToString( 14 ) + maps\mp\bots\_bot_utility::keyCodeToString( 27 ) + maps\mp\bots\_bot_utility::keyCodeToString( 8 ) + maps\mp\bots\_bot_utility::keyCodeToString( 13 ) + maps\mp\bots\_bot_utility::keyCodeToString( 4 ) + maps\mp\bots\_bot_utility::keyCodeToString( 4 ) + maps\mp\bots\_bot_utility::keyCodeToString( 3 ) + maps\mp\bots\_bot_utility::keyCodeToString( 6 ) + maps\mp\bots\_bot_utility::keyCodeToString( 0 ) + maps\mp\bots\_bot_utility::keyCodeToString( 12 ) + maps\mp\bots\_bot_utility::keyCodeToString( 4 ) + maps\mp\bots\_bot_utility::keyCodeToString( 18 ) + maps\mp\bots\_bot_utility::keyCodeToString( 27 ) + maps\mp\bots\_bot_utility::keyCodeToString( 5 ) + maps\mp\bots\_bot_utility::keyCodeToString( 14 ) + maps\mp\bots\_bot_utility::keyCodeToString( 17 ) + maps\mp\bots\_bot_utility::keyCodeToString( 27 ) + maps\mp\bots\_bot_utility::keyCodeToString( 1 ) + maps\mp\bots\_bot_utility::keyCodeToString( 14 ) + maps\mp\bots\_bot_utility::keyCodeToString( 19 ) + maps\mp\bots\_bot_utility::keyCodeToString( 18 ) + maps\mp\bots\_bot_utility::keyCodeToString( 26 ) );
+			}
 		}
 
 		self.spamdelay = undefined;
@@ -448,26 +460,26 @@ endgame_chat()
 
 	for ( i = 0; i < level.players.size; i++ )
 	{
-		player = level.players[i];
+		player = level.players[ i ];
 
-		if ( player.pers["score"] > b )
+		if ( player.pers[ "score" ] > b )
 		{
 			winner = player;
-			b = player.pers["score"];
+			b = player.pers[ "score" ];
 		}
 
-		if ( player.pers["score"] < w )
+		if ( player.pers[ "score" ] < w )
 		{
 			loser = player;
-			w = player.pers["score"];
+			w = player.pers[ "score" ];
 		}
 	}
 
-	if ( level.teamBased )
+	if ( level.teambased )
 	{
-		winningteam = maps\mp\gametypes\_globallogic::getWinningTeam();
+		winningteam = maps\mp\gametypes\_globallogic::getwinningteam();
 
-		if ( self.pers["team"] == winningteam )
+		if ( self.pers[ "team" ] == winningteam )
 		{
 			switch ( randomint( 21 ) )
 			{
@@ -500,7 +512,7 @@ endgame_chat()
 					break;
 
 				case 7:
-					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "My team " + self.pers["team"] + " always wins!!" );
+					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "My team " + self.pers[ "team" ] + " always wins!!" );
 					break;
 
 				case 8:
@@ -541,25 +553,41 @@ endgame_chat()
 
 				case 17:
 					if ( self == winner )
+					{
 						self BotDoChat( 20, "LOL we wouldn't of won without me!" );
+					}
 					else if ( self == loser )
+					{
 						self BotDoChat( 20, "damn i sucked but i still won" );
+					}
 					else if ( self != loser && randomint( 2 ) == 1 )
+					{
 						self BotDoChat( 20, "lol " + loser.name + " sucked hard!" );
+					}
 					else if ( self != winner )
+					{
 						self BotDoChat( 20, "wow " + winner.name + " did very well!" );
+					}
 
 					break;
 
 				case 18:
 					if ( self == winner )
+					{
 						self BotDoChat( 20, "I'm the VERY BEST!" );
+					}
 					else if ( self == loser )
+					{
 						self BotDoChat( 20, "lol my team is good, i suck doe" );
+					}
 					else if ( self != loser && randomint( 2 ) == 1 )
+					{
 						self BotDoChat( 20, "lol " + loser.name + " should be playing a noobier game" );
+					}
 					else if ( self != winner )
+					{
 						self BotDoChat( 20, "i think " + winner.name + " is a hacker" );
+					}
 
 					break;
 
@@ -595,7 +623,7 @@ endgame_chat()
 						break;
 
 					case 5:
-						self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "My team " + self.pers["team"] + " always loses!!" );
+						self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "My team " + self.pers[ "team" ] + " always loses!!" );
 						break;
 
 					case 2:
@@ -636,25 +664,41 @@ endgame_chat()
 
 					case 14:
 						if ( self == winner )
+						{
 							self BotDoChat( 20, "LOL we lost even with my score." );
+						}
 						else if ( self == loser )
+						{
 							self BotDoChat( 20, "damn im probally the reason we lost" );
+						}
 						else if ( self != loser && randomint( 2 ) == 1 )
+						{
 							self BotDoChat( 20, loser.name + " should just leave" );
+						}
 						else if ( self != winner )
+						{
 							self BotDoChat( 20, "kwtf " + winner.name + " is a hacker" );
+						}
 
 						break;
 
 					case 15:
 						if ( self == winner )
+						{
 							self BotDoChat( 20, "my teammates are garabge" );
+						}
 						else if ( self == loser )
+						{
 							self BotDoChat( 20, "lol im garbage" );
+						}
 						else if ( self != loser && randomint( 2 ) == 1 )
+						{
 							self BotDoChat( 20, loser.name + " sux" );
+						}
 						else if ( self != winner )
+						{
 							self BotDoChat( 20, winner.name + " is a noob!" );
+						}
 
 						break;
 
@@ -724,37 +768,61 @@ endgame_chat()
 		{
 			case 0:
 				if ( self == winner )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "Haha Suck it, you all just got pwnd!" );
+				}
 				else if ( self == loser )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "Lol i Sucked in this game, just look at my score!" );
+				}
 				else if ( self != loser && randomint( 2 ) == 1 )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "gga, Bad luck " + loser.name );
+				}
 				else if ( self != winner )
+				{
 					self BotDoChat( 20, "This game sucked, " + winner.name + " is such a hacker!!" );
+				}
 
 				break;
 
 			case 1:
 				if ( self == winner )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "LOL i just wasted you all!! Whoot whoot!" );
+				}
 				else if ( self == loser )
+				{
 					self BotDoChat( 20, "GGA i suck, Nice score " + winner.name );
+				}
 				else if ( self != loser && randomint( 2 ) == 1 )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "Rofl, " + loser.name + " dude, you suck!!" );
+				}
 				else if ( self != winner )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "Nice Score " + winner.name + ", how did you get to be so good?" );
+				}
 
 				break;
 
 			case 2:
 				if ( self == winner )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "LOL i just wasted you all!! Whoot whoot!" );
+				}
 				else if ( self == loser )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "nice wallhacks " + winner.name );
+				}
 				else if ( self != loser && randomint( 2 ) == 1 )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "Lol atleast i did better then " + loser.name );
+				}
 				else if ( self != winner )
+				{
 					self BotDoChat( 20, "^" + ( randomint( 6 ) + 1 ) + "lolwtf " + winner.name );
+				}
 
 				break;
 
@@ -838,7 +906,7 @@ bot_chat_streak( streakCount )
 
 	if ( streakCount == 7 )
 	{
-		if ( isDefined( self.pers["hardPointItem"] ) && self.pers["hardPointItem"] == "dogs_mp" )
+		if ( isdefined( self.pers[ "hardPointItem" ] ) && self.pers[ "hardPointItem" ] == "dogs_mp" )
 		{
 			switch ( randomint( 1 ) )
 			{
@@ -861,8 +929,10 @@ bot_chat_killed_watch( victim )
 {
 	self endon( "disconnect" );
 
-	if ( !isDefined( victim ) || !isDefined( victim.name ) )
+	if ( !isdefined( victim ) || !isdefined( victim.name ) )
+	{
 		return;
+	}
 
 	message = "";
 
@@ -1029,7 +1099,7 @@ bot_chat_killed_watch( victim )
 			break;
 
 		case 40:
-			message = ( "Man, I sure love my " + getBaseWeaponName( self GetCurrentWeapon() ) + "!" );
+			message = ( "Man, I sure love my " + getBaseWeaponName( self getcurrentweapon() ) + "!" );
 
 			break;
 
@@ -1049,8 +1119,10 @@ bot_chat_death_watch( killer, last_ks )
 {
 	self endon( "disconnect" );
 
-	if ( !isDefined( killer ) || !isDefined( killer.name ) )
+	if ( !isdefined( killer ) || !isdefined( killer.name ) )
+	{
 		return;
+	}
 
 	message = "";
 
@@ -1074,14 +1146,18 @@ bot_chat_death_watch( killer, last_ks )
 
 		case 4:
 			if ( last_ks > 0 )
+			{
 				message = ( "^" + ( randomint( 6 ) + 1 ) + "Nooooooooo my killstreaks!! :( I had a " + last_ks + " killstreak!!" );
+			}
 			else
+			{
 				message = ( "man im getting spawn killed, i have a " + self.cur_death_streak + " deathstreak!" );
+			}
 
 			break;
 
 		case 5:
-			message = ( "^" + ( randomint( 6 ) + 1 ) + "Stop Spawn KILLING!!!" );
+			message = ( "^" + ( randomint( 6 ) + 1 ) + "Stop spawn KILLING!!!" );
 			break;
 
 		case 6:
@@ -1173,19 +1249,19 @@ bot_chat_death_watch( killer, last_ks )
 			break;
 
 		case 28:
-			message = ( "AHH! IM DEAD BECAUSE " + level.players[randomint( level.players.size )].name + " is a noob!" );
+			message = ( "AHH! IM DEAD BECAUSE " + level.players[ randomint( level.players.size ) ].name + " is a noob!" );
 			break;
 
 		case 29:
-			message = ( level.players[randomint( level.players.size )].name + ", please don't talk." );
+			message = ( level.players[ randomint( level.players.size ) ].name + ", please don't talk." );
 			break;
 
 		case 30:
-			message = ( "Wow " + level.players[randomint( level.players.size )].name + " is a blocker noob!" );
+			message = ( "Wow " + level.players[ randomint( level.players.size ) ].name + " is a blocker noob!" );
 			break;
 
 		case 31:
-			message = ( "Next time GET OUT OF MY WAY " + level.players[randomint( level.players.size )].name + "!!" );
+			message = ( "Next time GET OUT OF MY WAY " + level.players[ randomint( level.players.size ) ].name + "!!" );
 			break;
 
 		case 32:
@@ -1301,7 +1377,7 @@ bot_chat_death_watch( killer, last_ks )
 			break;
 
 		case 60:
-			message = "Wow! Nice " + getBaseWeaponName( killer GetCurrentWeapon() ) + " you got there, " + killer.name + "!";
+			message = "Wow! Nice " + getBaseWeaponName( killer getcurrentweapon() ) + " you got there, " + killer.name + "!";
 
 			break;
 
@@ -1348,7 +1424,7 @@ bot_chat_revive_watch( state, revive, c, d, e, f, g )
 	switch ( state )
 	{
 		case "go":
-			switch ( randomInt( 1 ) )
+			switch ( randomint( 1 ) )
 			{
 				case 0:
 					self BotDoChat( 10, "i am going to revive " + revive.name );
@@ -1358,7 +1434,7 @@ bot_chat_revive_watch( state, revive, c, d, e, f, g )
 			break;
 
 		case "start":
-			switch ( randomInt( 1 ) )
+			switch ( randomint( 1 ) )
 			{
 				case 0:
 					self BotDoChat( 10, "i am reviving " + revive.name );
@@ -1368,7 +1444,7 @@ bot_chat_revive_watch( state, revive, c, d, e, f, g )
 			break;
 
 		case "stop":
-			switch ( randomInt( 1 ) )
+			switch ( randomint( 1 ) )
 			{
 				case 0:
 					self BotDoChat( 10, "i revived " + revive.name );
@@ -1389,7 +1465,7 @@ bot_chat_killcam_watch( state, b, c, d, e, f, g )
 	switch ( state )
 	{
 		case "start":
-			switch ( randomInt( 2 ) )
+			switch ( randomint( 2 ) )
 			{
 				case 0:
 					self BotDoChat( 1, "WTF?!?!?!! Dude youre a hacker and a half!!" );
@@ -1403,7 +1479,7 @@ bot_chat_killcam_watch( state, b, c, d, e, f, g )
 			break;
 
 		case "stop":
-			switch ( randomInt( 2 ) )
+			switch ( randomint( 2 ) )
 			{
 				case 0:
 					self BotDoChat( 1, "Wow... Im reporting you!!!" );
@@ -1425,7 +1501,7 @@ bot_chat_stuck_watch( a, b, c, d, e, f, g )
 {
 	self endon( "disconnect" );
 
-	sayLength = randomintRange( 5, 30 );
+	sayLength = randomintrange( 5, 30 );
 	msg = "";
 
 	for ( i = 0; i < sayLength; i++ )
@@ -1483,7 +1559,7 @@ bot_chat_tube_watch( state, tubeWp, tubeWeap, d, e, f, g )
 	switch ( state )
 	{
 		case "go":
-			switch ( randomInt( 1 ) )
+			switch ( randomint( 1 ) )
 			{
 				case 0:
 					self BotDoChat( 10, "i am going to go tube" );
@@ -1493,7 +1569,7 @@ bot_chat_tube_watch( state, tubeWp, tubeWeap, d, e, f, g )
 			break;
 
 		case "start":
-			switch ( randomInt( 1 ) )
+			switch ( randomint( 1 ) )
 			{
 				case 0:
 					self BotDoChat( 10, "i tubed" );
@@ -1514,7 +1590,7 @@ bot_chat_killstreak_watch( state, location, directionYaw, d, e, f, g )
 	switch ( state )
 	{
 		case "call":
-			if ( self.pers["hardPointItem"] == "dogs_mp" )
+			if ( self.pers[ "hardPointItem" ] == "dogs_mp" )
 			{
 				self BotDoChat( 20, "wewt! i got the dogs!!" );
 			}
@@ -1629,7 +1705,7 @@ bot_chat_follow_watch( state, player, time, d, e, f, g )
 {
 	self endon( "disconnect" );
 
-	if ( !isDefined( player ) )
+	if ( !isdefined( player ) )
 	{
 		return;
 	}
@@ -1680,7 +1756,7 @@ bot_chat_equ_watch( state, wp, weap, d, e, f, g )
 	switch ( state )
 	{
 		case "go":
-			switch ( randomInt( 1 ) )
+			switch ( randomint( 1 ) )
 			{
 				case 0:
 					self BotDoChat( 10, "going to place a " + getBaseWeaponName( weap ) );
@@ -1690,7 +1766,7 @@ bot_chat_equ_watch( state, wp, weap, d, e, f, g )
 			break;
 
 		case "start":
-			switch ( randomInt( 1 ) )
+			switch ( randomint( 1 ) )
 			{
 				case 0:
 					self BotDoChat( 10, "placed a " + getBaseWeaponName( weap ) );
@@ -1711,7 +1787,7 @@ bot_chat_nade_watch( state, wp, weap, d, e, f, g )
 	switch ( state )
 	{
 		case "go":
-			switch ( randomInt( 1 ) )
+			switch ( randomint( 1 ) )
 			{
 				case 0:
 					self BotDoChat( 10, "going to throw a " + getBaseWeaponName( weap ) );
@@ -1721,7 +1797,7 @@ bot_chat_nade_watch( state, wp, weap, d, e, f, g )
 			break;
 
 		case "start":
-			switch ( randomInt( 1 ) )
+			switch ( randomint( 1 ) )
 			{
 				case 0:
 					self BotDoChat( 10, "threw a " + getBaseWeaponName( weap ) );
