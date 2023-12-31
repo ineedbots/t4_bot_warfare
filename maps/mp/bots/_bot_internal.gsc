@@ -2861,6 +2861,12 @@ bot_lookat( pos, time, vel, doAimPredict )
 	self endon( "spawned_player" );
 	level endon ( "game_ended" );
 
+	// dedi doesnt have this registered
+	if ( getdvar( "aim_automelee_enabled" ) == "" )
+	{
+		setdvar( "aim_automelee_enabled", 1 );
+	}
+
 	if ( level.gameended || level.inprematchperiod || self.bot.isfrozen || !getdvarint( "bots_play_aim" ) )
 	{
 		return;
