@@ -2867,6 +2867,11 @@ bot_lookat( pos, time, vel, doAimPredict )
 		setdvar( "aim_automelee_enabled", 1 );
 	}
 
+	if ( getdvar( "aim_automelee_range" ) == "" )
+	{
+		setdvar( "aim_automelee_range", 128 );
+	}
+
 	if ( level.gameended || level.inprematchperiod || self.bot.isfrozen || !getdvarint( "bots_play_aim" ) )
 	{
 		return;
