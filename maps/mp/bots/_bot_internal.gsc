@@ -1604,7 +1604,7 @@ aim_loop()
 					
 					conedot = getConeDot( aimpos, eyePos, angles );
 					
-					if ( isdefined( self.bot.knifing_target ) )
+					if ( isdefined( self.bot.knifing_target ) && self.bot.knifing_target == target )
 					{
 						self thread bot_lookat( target gettagorigin( "j_spine4" ), 0.05 );
 					}
@@ -1632,7 +1632,7 @@ aim_loop()
 					
 					conedot = getConeDot( aimpos, eyePos, angles );
 					
-					if ( isdefined( self.bot.knifing_target ) || ( !nadeAimOffset && conedot > 0.999 && lengthsquared( aimoffset ) < 0.05 ) )
+					if ( ( isdefined( self.bot.knifing_target ) && self.bot.knifing_target == target ) || ( !nadeAimOffset && conedot > 0.999 && lengthsquared( aimoffset ) < 0.05 ) )
 					{
 						self thread bot_lookat( aimpos, 0.05 );
 					}
