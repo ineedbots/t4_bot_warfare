@@ -119,6 +119,12 @@ Make sure to disable this DVAR by adding ```set bots_main_firstIsHost 0``` in yo
 | bots_play_aim                    | If the bots can aim.                                                                           | 1          |
 
 ## Changelog
+- v2.2.0
+  - Bots can now melee lunge
+  - Waypoints only load from csv now
+  - Fix bots possibly being stuck in sab
+  - Major cleanup
+
 - v2.1.0
   - Bot chatter system, bots_main_chat
   - Greatly reduce script variable usage
